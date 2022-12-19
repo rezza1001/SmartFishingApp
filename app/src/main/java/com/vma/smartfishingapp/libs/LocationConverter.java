@@ -4,6 +4,14 @@ import android.content.Context;
 import android.location.Location;
 import android.util.Log;
 
+import com.vma.smartfishingapp.dom.VmaApiConstant;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+
 /**
  * Created by Mochamad Rezza Gumilang on 30/03/2022
  */
@@ -97,5 +105,35 @@ public class LocationConverter {
         }
         else
             return getDisplaySecond(Type.LATITUDE);
+    }
+
+    public double getBearing(Context context){
+        double theta;
+
+        try {
+            JSONObject gpsLast = new JSONObject(VmaPreferences.get(context, VmaApiConstant.GPS_LSAT_DATA));
+            double lon = gpsLast.getDouble("longitude");
+            double lat = gpsLast.getDouble("latitude");
+
+            double degToRad = Math.PI / 180.0;
+            double phi1 = lat * degToRad;
+            double phi2 = getLatitude() * degToRad;
+            double lam1 = lon * degToRad;
+            double lam2 = getLongitude() * degToRad;
+            theta = Math.atan2(Math.sin(lam2 - lam1) * Math.cos(phi2), Math.cos(phi1) * Math.sin(phi2) - Math.sin(phi1) * Math.cos(phi2) * Math.cos(lam2 - lam1)) * 180 / Math.PI;
+            if(theta < 0.0)
+                theta += 360.0;
+            return theta;
+        }catch (Exception e) {
+            return 0.0;
+        }
+    }
+
+    public String getBearingStr(Context context){
+        DecimalFormat df = new DecimalFormat("0");
+        df.setRoundingMode(RoundingMode.UP);
+        double bearing = getBearing(context);
+
+        return df.format(bearing);
     }
 }

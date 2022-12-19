@@ -113,4 +113,6 @@
     <string name="confirm">Konfirmasi</string>
     <string name="TrackingList">List Track</string>
     <string name="are_you_sure_logout">Anda yakin untuk logout</string>
+    <string name="fish_potential_area">Daerah Potrensi Ikan Pelagis</string>
+    <string name="dpip">DPID</string>
 </resources>

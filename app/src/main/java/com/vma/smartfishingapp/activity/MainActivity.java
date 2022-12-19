@@ -112,7 +112,7 @@ public class MainActivity extends MyActivity {
         menu_bottom.addMenu(new MenuHolder(MenuHolder.MENU.WEATHER,getResources().getString(R.string.weather),R.drawable.ic_weather, createDrawable(R.drawable.menu_weather)));
 
         menu_bottom2.create(true);
-        menu_bottom2.addMenu(new MenuHolder(MenuHolder.MENU.MESSAGE,"DPI",R.drawable.ic_message, createDrawable(R.drawable.menu_message)));
+        menu_bottom2.addMenu(new MenuHolder(MenuHolder.MENU.MESSAGE,"DPI",R.drawable.ic_dpi, createDrawable(R.drawable.menu_message)));
         menu_bottom2.addMenu(new MenuHolder(MenuHolder.MENU.SOS,"SOS",R.drawable.ic_sos, createDrawable(R.drawable.menu_sos)));
         menu_bottom2.addMenu(new MenuHolder(MenuHolder.MENU.SETTING,getResources().getString(R.string.setting),R.drawable.ic_settings, createDrawable(R.drawable.menu_setting)));
 
