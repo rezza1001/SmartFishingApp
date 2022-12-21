@@ -2,7 +2,8 @@ package com.vma.smartfishingapp.api;
 
 public class ApiConfig {
 
-    public static final String MAIN = "http://40.40.40.152:8080/router/";
+//    public static final String MAIN = "http://40.40.40.152:8080/router/";
+    public static final String MAIN = "http://api.smartfishing.id/";
     public static final String PATH_IMAGE = "http://api.smartfishing.id/";
 
     public static final String LOGIN = "mobile/login";
@@ -12,6 +13,7 @@ public class ApiConfig {
     public static final String UPLOAD_FILE = "file/upload";
     public static final String POST_WEATHER = "mobile/weather";
     public static final String POST_DPI = "mobile/dpi";
+    public static final String POST_SAVE_POSITION = "mobile/position";
 
 
 }

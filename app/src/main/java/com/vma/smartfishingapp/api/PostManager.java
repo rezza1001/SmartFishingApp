@@ -44,7 +44,6 @@ public class PostManager extends AsyncTask<String, String, String> {
     public PostManager(Context mContext, String apiUrl) {
         this.apiUrl = apiUrl;
         context = mContext;
-        Loading.showLoading(mContext,"Loading..");
     }
 
 
@@ -157,7 +156,9 @@ public class PostManager extends AsyncTask<String, String, String> {
             return;
         }
         Utility.logDbug(TAG,"onPreExecute with loading : "+ showLoading);
-        Loading.showLoading(context,"Loading");
+        if (showLoading){
+            Loading.showLoading(context,"Loading");
+        }
 
         super.onPreExecute();
     }
@@ -236,7 +237,9 @@ public class PostManager extends AsyncTask<String, String, String> {
         } catch (Exception e) {
             e.printStackTrace();
             sbResponse.append("Request time out");
-            Loading.cancelLoading();
+            if (showLoading){
+                Loading.cancelLoading();
+            }
             return sbResponse.toString();
         }
 
@@ -261,7 +264,9 @@ public class PostManager extends AsyncTask<String, String, String> {
         long diff = date1.getTime() - dateStart.getTime();
         Utility.logDbug(TAG,"TOTAL TIME : "+ diff+" Seconds");
 
-        Loading.cancelLoading();
+        if (showLoading){
+            Loading.cancelLoading();
+        }
         try {
 
             String results = presults.split(SPARATOR)[1];

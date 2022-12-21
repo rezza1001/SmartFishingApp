@@ -1,6 +1,7 @@
 package com.vma.smartfishingapp.activity;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -78,7 +79,12 @@ public class DpiActivity extends MyActivity {
 
     @Override
     protected void initListener() {
-
+        adapter.setOnSelectedListener(menu -> {
+            Intent intent = new Intent(mActivity, MainMapActivity.class);
+            intent.putExtra("longitude", menu.getLongitude());
+            intent.putExtra("latitude", menu.getLatitude());
+            startActivity(intent);
+        });
     }
 
     private void loadData(JSONObject obj){
@@ -92,6 +98,11 @@ public class DpiActivity extends MyActivity {
                 holder.setLatitude(jo.getDouble("latitude"));
                 holder.setLongitude(jo.getDouble("longitude"));
                 holder.setDistance(jo.getDouble("distance"));
+
+                if (i ==0 ){
+                    Date date = Utility.getDate(jo.getString("date"),"yyyy-MM-dd");
+                    txvw_update.setText(Utility.getDateString(date,"dd MMM yyyy"));
+                }
 
                 listDpi.add(holder);
             }

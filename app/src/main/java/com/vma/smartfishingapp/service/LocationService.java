@@ -36,7 +36,7 @@ import java.util.List;
 public class LocationService {
     private static final String TAG = "LocationService";
     FusedLocationProviderClient mFusedLocationClient;
-    Activity mActivity;
+    Context mActivity;
     LocationRequest locationRequest;
     LocationManager locationManager;
 
@@ -46,7 +46,7 @@ public class LocationService {
     private static final int FAST_INTERVAL_TIME = 1000;
     private static final int INTERVAL_TIME = 10000;
 
-    public LocationService(Activity pActivity) {
+    public LocationService(Context pActivity) {
         mActivity = pActivity;
     }
 
@@ -70,29 +70,11 @@ public class LocationService {
         Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
 
 
-        task.addOnSuccessListener(mActivity, locationSettingsResponse -> Log.d(TAG, "addOnSuccessListener onSuccess"));
-
-        task.addOnFailureListener(mActivity, e -> {
-            if (e instanceof ResolvableApiException) {
-                Log.e(TAG, "Location settings are not satisfied, but this can be fixed");
-                // Location settings are not satisfied, but this can be fixed
-                // by showing the user a dialog.
-                try {
-                    // Show the dialog by calling startResolutionForResult(),
-                    // and check the result in onActivityResult().
-                    Log.e(TAG, "Show the dialog by calling startResolutionForResult()");
-                    ResolvableApiException resolvable = (ResolvableApiException) e;
-                    resolvable.startResolutionForResult(mActivity, 1);
-                } catch (IntentSender.SendIntentException sendEx) {
-                    Log.e(TAG, "Ignore the error " + sendEx.getMessage());
-                }
-            }
-        });
-        if (ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-
-        mFusedLocationClient.requestLocationUpdates(locationRequest,callback , Looper.getMainLooper());
+        mFusedLocationClient.requestLocationUpdates(locationRequest, callback, Looper.getMainLooper());
         mFusedLocationClient.getLastLocation().addOnFailureListener(e -> {
             Log.e(TAG, "Failed get location " +e.getMessage());
         });
@@ -134,8 +116,6 @@ public class LocationService {
         void onChange(Location lastLocation, List<Location> locations);
         void onChangeStatus(boolean available);
     }
-
-
 
 
     private Location appendDummy(Location location){

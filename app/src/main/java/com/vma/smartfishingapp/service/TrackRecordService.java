@@ -95,16 +95,21 @@ public class TrackRecordService extends Service {
             LocationConverter converter = new LocationConverter(jo.getString("longitude"),jo.getString("latitude"));
             latitude = converter.getLatitude();
             longitude = converter.getLongitude();
-            FileProcessing.WriteFileToLog(getApplicationContext(),folderName,fileName,jo.toString());
+
 
             if (lastLatitude != 0.0 && lastLongitude != 0.0){
                 Point point1 = new Point(lastLongitude, lastLatitude, SpatialReferences.getWgs84());
                 Point point2 = new Point(longitude, latitude, SpatialReferences.getWgs84());
-                distance = distance + (Utility.getDistance(point1,point2));
-            }
+                float currDistance = Utility.getDistance(point1,point2);
+                if (currDistance < 0.5){
+                  return;
+                }
+                distance = distance + currDistance;
+                FileProcessing.WriteFileToLog(getApplicationContext(),folderName,fileName,jo.toString());
 
-            lastLongitude = longitude;
-            lastLatitude = latitude;
+                lastLongitude = longitude;
+                lastLatitude = latitude;
+            }
         }catch (Exception e){
             e.printStackTrace();
         }

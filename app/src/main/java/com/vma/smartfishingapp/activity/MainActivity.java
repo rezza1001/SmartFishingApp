@@ -1,8 +1,13 @@
 package com.vma.smartfishingapp.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
+import android.os.PowerManager;
+import android.provider.Settings;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
@@ -23,6 +28,7 @@ import com.vma.smartfishingapp.dialog.ConfirmDialog;
 import com.vma.smartfishingapp.dialog.LoginDialog;
 import com.vma.smartfishingapp.dom.MenuHolder;
 import com.vma.smartfishingapp.master.MyActivity;
+import com.vma.smartfishingapp.service.AuthService;
 import com.vma.smartfishingapp.widget.CompassFragment;
 import com.vma.smartfishingapp.widget.DateWidget;
 
@@ -62,6 +68,8 @@ public class MainActivity extends MyActivity {
 
         bbtn_login = findViewById(R.id.bbtn_login);
         bbtn_login.create("Login",0);
+
+        keepAlive();
 //        bbtn_login
     }
 
@@ -76,6 +84,7 @@ public class MainActivity extends MyActivity {
 
             bbtn_login.startAnimation(AnimationUtils.loadAnimation(mActivity, R.anim.push_up_in));
             bbtn_login.setVisibility(View.VISIBLE);
+            stopService(new Intent(mActivity, AuthService.class));
             return;
         }
         rvly_profile.startAnimation(AnimationUtils.loadAnimation(mActivity, R.anim.zoom_in));
@@ -86,6 +95,8 @@ public class MainActivity extends MyActivity {
         if (!mAccountDB.image.isEmpty()){
             Glide.with(mActivity).load(ApiConfig.PATH_IMAGE + mAccountDB.image).into(imvw_kapal);
         }
+
+        startService(new Intent(mActivity, AuthService.class));
 
 
     }
@@ -161,6 +172,17 @@ public class MainActivity extends MyActivity {
                 initData();
             }
         });
+    }
 
+    @SuppressLint("BatteryLife")
+    private void keepAlive(){
+        Intent intent = new Intent();
+        String packageName = getPackageName();
+        PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
+        if (!pm.isIgnoringBatteryOptimizations(packageName)) {
+            intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+            intent.setData(Uri.parse("package:" + packageName));
+            startActivity(intent);
+        }
     }
 }
