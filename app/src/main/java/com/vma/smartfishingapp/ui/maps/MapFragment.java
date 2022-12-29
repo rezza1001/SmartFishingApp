@@ -41,11 +41,15 @@ import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
 import com.esri.arcgisruntime.symbology.SimpleLineSymbol;
 import com.esri.arcgisruntime.util.ListenableList;
 import com.vma.smartfishingapp.R;
+import com.vma.smartfishingapp.database.table.TrackDB;
 import com.vma.smartfishingapp.dom.VmaApiConstant;
 import com.vma.smartfishingapp.dom.VmaConstants;
+import com.vma.smartfishingapp.libs.FileProcessing;
 import com.vma.smartfishingapp.libs.LocationConverter;
 import com.vma.smartfishingapp.libs.MyFileReader;
+import com.vma.smartfishingapp.libs.Utility;
 import com.vma.smartfishingapp.libs.VmaPreferences;
+import com.vma.smartfishingapp.service.TrackRecordService;
 import com.vma.smartfishingapp.ui.component.Loading;
 import com.vma.smartfishingapp.ui.master.MyFragment;
 
@@ -76,13 +80,13 @@ public class MapFragment extends MyFragment {
     private final double MAX_SCALE = 3000000;
     private final double MIN_SCALE = 5000;
 
-    private final int [] mMapScale = {5000, 10000, 20000, 40000, 80000,160000,320000,640000,1280000,1500000,2000000};
+    private final int [] mMapScale = {5000, 10000, 20000, 40000, 80000,160000,320000,640000,1280000,1500000,2000000,3000000};
 
     private double myLatitude = DEFAULT_LAT;
     private double myLongitude = DEFAULT_LON;
 
-    private double myBearing = 0;
-    private int scalePosition = 10;
+    private float cursorBearing = 0;
+    private int scalePosition = 11;
     private boolean toMyLocation = true;
     int mNavigationMode = 0;
     private GraphicsOverlay graphicsOverlay,graphicsOverlayRecordTrack, graphicsOverlayTrackMarker;
@@ -92,8 +96,6 @@ public class MapFragment extends MyFragment {
     private SimpleLineSymbol mRecordLine;
     private PictureMarkerSymbol myPointerMarkerSymbol;
 
-
-    private String mLoadPath = "";
 
 
     public static MapFragment newInstance() {
@@ -223,16 +225,43 @@ public class MapFragment extends MyFragment {
     @Override
     protected void initData() {
         IntentFilter intentFilter =  new IntentFilter();
-        intentFilter.addAction(VmaConstants.SHOW_TRACK_MAP);
         intentFilter.addAction(VmaConstants.VMA_GPS);
         intentFilter.addAction(VmaConstants.NOTIFY_DIRECTION);
+        intentFilter.addAction(VmaConstants.NOTIFY_SHOW_TRACK);
         mActivity.registerReceiver(receiver,intentFilter);
 
         Loading.showLoading(mActivity,"Load Maps");
         new Handler().postDelayed(() -> mActivity.runOnUiThread(() -> {
             initMap();
             InitializeGISMap();
+            initialTrack();
         }),500);
+    }
+
+    private void initialTrack(){
+        if (TrackRecordService.isRecording){
+            String recordPath = FileProcessing.getRootPath(mActivity)+TrackRecordService.folderName+"/"+TrackRecordService.fileName;
+
+            MyFileReader reader = new MyFileReader(mActivity);
+            reader.readFile(recordPath);
+            reader.setOnReadListener(new MyFileReader.OnReadListener() {
+                @Override
+                public void onLiveRead(String data) {
+                    try {
+                        JSONObject jo = new JSONObject(data);
+                        LocationConverter converter = new LocationConverter(jo.getString("longitude"),jo.getString("latitude"));
+                        recordPosition.add(converter.getPoint());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFinish(String start, String data, String end) {
+                }
+            });
+        }
+
     }
 
     protected void onReceiveMessageFormGps(String data) {
@@ -250,8 +279,13 @@ public class MapFragment extends MyFragment {
             myLongitude = converter.getLongitude();
             covw_coordinate.setLocation(converter);
             double speed = jo.getDouble(VmaApiConstant.GPS_ITEM_SPEED);
-            myBearing = jo.getDouble(VmaApiConstant.GPS_ITEM_BEARING);
+            cursorBearing = jo.getInt(VmaApiConstant.GPS_ITEM_BEARING);
             covw_coordinate.setSpeed(speed);
+            covw_coordinate.setBearing(cursorBearing);
+            if (dsvw_destination.isDirection()){
+                cursorBearing = dsvw_destination.getBearing();
+            }
+
 
             mCurrPoint = new Point( myLongitude, myLatitude, SpatialReferences.getWgs84());
             //  Display Current Position
@@ -261,8 +295,7 @@ public class MapFragment extends MyFragment {
 
             setBearing();
 
-            boolean isRecording = VmaPreferences.getInt(mActivity, VmaConstants.TRACKING_RECORD) == 1;
-            if (isRecording){
+            if (TrackRecordService.isRecording){
                 recordPosition.add(mCurrPoint);
                 mActivity.runOnUiThread(this::showLineTrack);
             }
@@ -334,9 +367,6 @@ public class MapFragment extends MyFragment {
 
                 myLocation();
                 updateUIZoom();
-                if (!mLoadPath.isEmpty()){
-                    showTrackRecorded();
-                }
                 mapvw_arcgis.setViewpointCenterAsync(mCurrPoint);
                 dsvw_destination.create(mapvw_arcgis);
             }
@@ -413,10 +443,7 @@ public class MapFragment extends MyFragment {
     BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(VmaConstants.SHOW_TRACK_MAP)){
-                mLoadPath = intent.getStringExtra("path");
-            }
-            else if (intent.getAction().equals(VmaConstants.VMA_GPS)){
+           if (intent.getAction().equals(VmaConstants.VMA_GPS)){
                 String gpsData = intent.getStringExtra(VmaConstants.SERVICE_DATA);
                 Log.d(TAG,"BroadcastReceiver VMA_GPS");
                 onReceiveMessageFormGps(gpsData);
@@ -424,11 +451,27 @@ public class MapFragment extends MyFragment {
             else if (intent.getAction().equals(VmaConstants.NOTIFY_DIRECTION)){
                 dsvw_destination.setDirection();
             }
+            else if (intent.getAction().equals(VmaConstants.NOTIFY_SHOW_TRACK)){
+                int id =  intent.getIntExtra("id",0);
+                TrackDB db = new TrackDB();
+                db.getData(mActivity, id);
+
+                if (db.filePath.isEmpty()){
+                    Utility.showToastError(mActivity,"Data not found");
+                    return;
+                }
+                showTrackRecorded(db.filePath);
+            }
         }
     };
 
 
-    private void showTrackRecorded(){
+    private void showTrackRecorded(String mLoadPath){
+        File file = new File(mLoadPath);
+        if (!file.exists()){
+            Utility.showToastError(mActivity,"File track not found");
+            return;
+        }
         MyFileReader fileReader = new MyFileReader(mActivity);
         fileReader.setOnReadListener(new MyFileReader.OnReadListener() {
             @Override
@@ -450,23 +493,19 @@ public class MapFragment extends MyFragment {
                     graphicsOverlayTrackMarker   = new GraphicsOverlay(GraphicsOverlay.RenderingMode.STATIC);
                     mapvw_arcgis.getGraphicsOverlays().add(graphicsOverlayTrackMarker);
 
-                    JSONObject joStart = new JSONObject(data);
+                    JSONObject joStart = new JSONObject(start);
                     double longStart= joStart.getDouble("longitude");
                     double latStart= joStart.getDouble("latitude");
-
-                    Point startPoint = new Point( longStart, latStart, SpatialReferences.getWgs84());
-                    Graphic startGraphic = new Graphic(startPoint, getWayPointMarker(R.drawable.track_start));
+                    LocationConverter convStart = new LocationConverter(longStart,latStart);
+                    Graphic startGraphic = new Graphic(convStart.getPoint(), getWayPointMarker(R.drawable.track_start));
                     graphicsOverlayTrackMarker.getGraphics().add(startGraphic);
 
                     JSONObject joEnd = new JSONObject(end);
                     double longEnd= joEnd.getDouble("longitude");
                     double latEnd= joEnd.getDouble("latitude");
-
-                    Point endPoint = new Point( longEnd, latEnd, SpatialReferences.getWgs84());
-                    Graphic endGraphic = new Graphic(endPoint, getWayPointMarker(R.drawable.track_end));
+                    LocationConverter convEnd = new LocationConverter(longEnd,latEnd);
+                    Graphic endGraphic = new Graphic(convEnd.getPoint(), getWayPointMarker(R.drawable.track_end));
                     graphicsOverlayTrackMarker.getGraphics().add(endGraphic);
-
-                    mLoadPath = "";
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -493,9 +532,8 @@ public class MapFragment extends MyFragment {
         graphicsOverlayRecordTrack = new GraphicsOverlay(GraphicsOverlay.RenderingMode.DYNAMIC);
         mapvw_arcgis.getGraphicsOverlays().add(graphicsOverlayRecordTrack);
 
-
         //  Record Track Line
-        mRecordLine  = new SimpleLineSymbol(SimpleLineSymbol.Style.DASH, Color.BLUE, 3);
+        mRecordLine  = new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, Color.parseColor("#aa00ff"), 2);
 
         //  set map for center view
         cnvw_centerPoint.setMap(mapvw_arcgis);
@@ -535,11 +573,11 @@ public class MapFragment extends MyFragment {
         }
 
         if(mNavigationMode == 1){
-            //  Rotate Map
-            mapvw_arcgis.setViewpointRotationAsync(myBearing);
-            myPointerMarkerSymbol.setAngle((float)myBearing);
+            Log.d(TAG,"myBearing "+ cursorBearing);
+            mapvw_arcgis.setViewpointRotationAsync(cursorBearing);
+            myPointerMarkerSymbol.setAngle((float) cursorBearing);
         } else {
-            myPointerMarkerSymbol.setAngle((float)myBearing);
+            myPointerMarkerSymbol.setAngle((float) cursorBearing);
             mapvw_arcgis.setViewpointRotationAsync(0.0);
         }
     }
@@ -560,8 +598,8 @@ public class MapFragment extends MyFragment {
     private PictureMarkerSymbol getWayPointMarker(int resource){
         BitmapDrawable bitmapDrawable = (BitmapDrawable) ContextCompat.getDrawable(mActivity, resource);
         PictureMarkerSymbol mSymbolTargetPos = new PictureMarkerSymbol(bitmapDrawable);
-        mSymbolTargetPos.setHeight(24);
-        mSymbolTargetPos.setWidth(24);
+        mSymbolTargetPos.setHeight(34);
+        mSymbolTargetPos.setWidth(34);
         mSymbolTargetPos.loadAsync();
         return mSymbolTargetPos;
     }
@@ -570,6 +608,7 @@ public class MapFragment extends MyFragment {
         android.graphics.Point screenPoint = new android.graphics.Point(Math.round(x), Math.round(y));
         Point mapPoint = mapvw_arcgis.screenToLocation(screenPoint);
         return (Point) GeometryEngine.project(mapPoint, SpatialReferences.getWgs84());
+
     }
 
 }

@@ -13,4 +13,5 @@
     <color name="textBlue2">#0064FE</color>
     <color name="activity">#263238</color>
     <color name="weatherActivity">#052D43</color>
+    <color name="line">#d4d4d4</color>
 </resources>

@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -11,9 +12,9 @@ import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.geometry.SpatialReferences;
 import com.vma.smartfishingapp.dom.VmaApiConstant;
 import com.vma.smartfishingapp.dom.VmaConstants;
+import com.vma.smartfishingapp.libs.DistanceUnit;
 import com.vma.smartfishingapp.libs.FileProcessing;
 import com.vma.smartfishingapp.libs.LocationConverter;
-import com.vma.smartfishingapp.libs.Utility;
 import com.vma.smartfishingapp.libs.VmaPreferences;
 
 import org.json.JSONObject;
@@ -42,6 +43,8 @@ public class TrackRecordService extends Service {
     public static final String fileName = "tracking.txt";
     public static final String folderName = "track";
 
+    public static boolean isRecording = false;
+
 
     @Nullable
     @Override
@@ -53,6 +56,12 @@ public class TrackRecordService extends Service {
     public void onCreate() {
         super.onCreate();
         FileProcessing.createFolder(getApplicationContext(),folderName);
+
+        String path = FileProcessing.getRootPath(getApplicationContext())+ TrackRecordService.folderName;
+        FileProcessing.DeleteFile(path,TrackRecordService.fileName);
+
+        isRecording = true;
+        distance = 0;
 
         timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -84,6 +93,7 @@ public class TrackRecordService extends Service {
         double longitude = 0, latitude = 0;
         String prefData = VmaPreferences.get(getApplicationContext(), VmaApiConstant.GPS_LSAT_DATA);
         if (prefData.isEmpty()){
+            Log.d("TrackRecordService","GPS LAST DATA EMPTY");
             return;
         }
 
@@ -96,22 +106,39 @@ public class TrackRecordService extends Service {
             latitude = converter.getLatitude();
             longitude = converter.getLongitude();
 
-
-            if (lastLatitude != 0.0 && lastLongitude != 0.0){
-                Point point1 = new Point(lastLongitude, lastLatitude, SpatialReferences.getWgs84());
-                Point point2 = new Point(longitude, latitude, SpatialReferences.getWgs84());
-                float currDistance = Utility.getDistance(point1,point2);
-                if (currDistance < 0.5){
-                  return;
-                }
-                distance = distance + currDistance;
-                FileProcessing.WriteFileToLog(getApplicationContext(),folderName,fileName,jo.toString());
-
+            if (lastLatitude == 0 && lastLongitude == 0){
                 lastLongitude = longitude;
                 lastLatitude = latitude;
+                FileProcessing.WriteFileToLog(getApplicationContext(),folderName,fileName,jo.toString());
             }
+            else {
+                if (converter.getLongitude() != 0.0 && converter.getLatitude() != 0.0){
+                    Point point1 = new Point(lastLongitude, lastLatitude, SpatialReferences.getWgs84());
+                    Point point2 = new Point(longitude, latitude, SpatialReferences.getWgs84());
+
+                    DistanceUnit unit = new DistanceUnit();
+                    unit.calcDistance(point1, point2);
+                    double distanceMetre = unit.getNm() * 1852;
+                    if (distanceMetre < 20){
+                        return;
+                    }
+                    distance = (float) (distance + unit.getNm());
+                    jo.remove("command");
+                    jo.remove("status");
+                    FileProcessing.WriteFileToLog(getApplicationContext(),folderName,fileName,jo.toString());
+
+                    lastLongitude = longitude;
+                    lastLatitude = latitude;
+                }
+                else {
+                    Log.e("TrackRecordService","lastLatitude = 0 & lastLatitude = 0");
+                }
+            }
+
+
         }catch (Exception e){
             e.printStackTrace();
+            Log.e("TrackRecordService","GPS DATA ERROR "+ e.getMessage());
         }
     }
 
@@ -123,6 +150,7 @@ public class TrackRecordService extends Service {
 
     @Override
     public void onDestroy() {
+        isRecording = false;
         DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.getDefault());
         DecimalFormat format = new DecimalFormat("0.00", symbols);
         float xDistance = Float.parseFloat(format.format(distance));

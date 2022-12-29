@@ -118,9 +118,15 @@
     <string name="permission">Yukom Akses</string>
     <string name="location_name">Nama Lokasi</string>
     <string name="saved_location">Lokasi Tersimpan</string>
+    <string name="saved_track">Track Tersimpan</string>
     <string name="goto_location">Menuju Lokasi</string>
     <string name="edit_location">Ubah Lokasi</string>
+    <string name="edit_name">Ubah Name</string>
     <string name="delete">Hapus</string>
     <string name="move_location">Pindah Lokasi Tujuan</string>
     <string name="add_location">Tambah Lokasi Tujuan</string>
+    <string name="are_you_sure_to_delete_track">Anda yakin untuk menghapus track #X1 dari daftar</string>
+    <string name="are_you_sure_to_delete_location">Anda yakin untuk menghapus lokasi #X1 dari daftar</string>
+    <string name="success">Proses Berhasil</string>
+    <string name="add">Tambah</string>
 </resources>

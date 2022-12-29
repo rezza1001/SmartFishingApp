@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Handler;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -36,6 +35,7 @@ public class MainMapActivity extends MyActivity {
         IntentFilter intentFilter =  new IntentFilter();
         intentFilter.addAction(VmaConstants.SHOW_TRACK);
         intentFilter.addAction(VmaConstants.NOTIFY_DIRECTION);
+        intentFilter.addAction(VmaConstants.NOTIFY_SHOW_TRACK);
         registerReceiver(receiver,intentFilter);
 
     }
@@ -59,6 +59,11 @@ public class MainMapActivity extends MyActivity {
             }
         });
     }
+
+//    @Override
+//    public void onBackPressed() {
+//        moveTaskToBack(true);
+//    }
 
     @Override
     protected void onDestroy() {
@@ -94,15 +99,8 @@ public class MainMapActivity extends MyActivity {
     BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(VmaConstants.SHOW_TRACK)){
-                menu_bottom.setSelected(0);
-                new Handler().postDelayed(() -> {
-                    Intent intent1 = new Intent(VmaConstants.SHOW_TRACK_MAP);
-                    intent1.putExtra("path",intent.getStringExtra("file_path"));
-                    sendBroadcast(intent1);
-                },500);
-            }
-            else if (intent.getAction().equals(VmaConstants.NOTIFY_DIRECTION)){
+             if (intent.getAction().equals(VmaConstants.NOTIFY_DIRECTION) ||
+                    intent.getAction().equals(VmaConstants.NOTIFY_SHOW_TRACK) ){
                 menu_bottom.setSelected(0);
             }
 

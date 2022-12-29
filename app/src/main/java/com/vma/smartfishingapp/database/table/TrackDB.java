@@ -94,6 +94,8 @@ public class TrackDB extends MasterDB {
         this.filePath  = res.getString(res.getColumnIndex(FILE_PATH));
         this.distance     = Float.parseFloat(res.getString(res.getColumnIndex(DISTANCE)));
         this.speed     = Float.parseFloat(res.getString(res.getColumnIndex(SPEED)));
+
+        Log.d(TAG,"pId "+ pId+" | name "+name+" | filePath "+filePath);
     }
 
     public ContentValues createContentValues(){
@@ -134,7 +136,9 @@ public class TrackDB extends MasterDB {
     public void getData(Context context, int id){
         DatabaseManager pDB = new DatabaseManager(context);
         SQLiteDatabase db = pDB.getReadableDatabase();
-        Cursor res = db.rawQuery("select * from " + TABLE_NAME +" WHERE "+ID+"="+id+"" , null);
+        String query = "select * from " + TABLE_NAME +" WHERE "+ID+" = "+id+"";
+        Log.d(TAG,"query "+query);
+        Cursor res = db.rawQuery(query , null);
         try {
             while (res.moveToNext()){
                 buildSingle(res);

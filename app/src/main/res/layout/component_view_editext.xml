@@ -20,7 +20,7 @@
         android:layout_below="@+id/txvw_edtxTitle"
         android:layout_marginTop="5dp"
         android:background="@drawable/bg_editext"
-        android:digits="1234567890abcdefghijklmnopqrstupwxyz "
+        android:digits="1234567890abcdefghijklmnopqrstupwxyz QWERTYUIOPLKJHGFDSAZXCVBNM"
         android:hint="Editext Hint"
         android:lines="1"
         android:maxLines="1"

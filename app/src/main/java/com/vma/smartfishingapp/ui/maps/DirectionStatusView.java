@@ -41,6 +41,8 @@ public class DirectionStatusView extends MyView {
     private ArrayList<DirectionDB> listDirection = new ArrayList<>();
 
     private Point mCurrPoint;
+    private float bearing =0;
+    private boolean isDirection= false;
 
     private GraphicsOverlay overLayDirection,graphicsOverlayStreet;
     private OnDirectionListener onDirectionListener;
@@ -125,9 +127,11 @@ public class DirectionStatusView extends MyView {
         graphicsOverlayStreet.getGraphics().clear();
 
         if (listDirection.size() > 0){
+            isDirection = true;
             show();
         }
         else {
+            isDirection = false;
             hide();
         }
     }
@@ -210,6 +214,7 @@ public class DirectionStatusView extends MyView {
         double bearing = VmaUtils.bearing(converter.getPoint().getY(), converter.getPoint().getX(), getPoint().getY(), getPoint().getX());
         String bear = String.format(Locale.ENGLISH, "%d°", (int)bearing);
         txvw_dstBearing.setText(bear);
+        this.bearing = (float) bearing;
 
 
         ListenableList<Graphic> graphicList = overLayDirection.getGraphics();
@@ -300,8 +305,16 @@ public class DirectionStatusView extends MyView {
         return mPoint;
     }
 
+    public float getBearing(){
+        String bear = String.format(Locale.ENGLISH, "%d", (int)bearing);
+        return Float.parseFloat(bear);
+    }
 
-    public void setOnDirectionListener( OnDirectionListener  onDirectionListener){
+    public boolean isDirection() {
+        return isDirection;
+    }
+
+    public void setOnDirectionListener(OnDirectionListener  onDirectionListener){
         this.onDirectionListener = onDirectionListener;
     }
 

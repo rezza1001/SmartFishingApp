@@ -10,7 +10,6 @@ public class VmaConstants {
     public static final String TRACK_RECORD_TASK    = "android.service.tracking";
     public static final String TRACK_RECORD_SAVE    = "android.service.tracking.save";
     public static final String SHOW_TRACK    = "android.service.tracking.show";
-    public static final String SHOW_TRACK_MAP    = "android.service.tracking.show.map";
     public static final String MAPS_CONFIG    = "maps.mmpk";
 
     public static String SERVICE_DATA = "JSON";
@@ -31,4 +30,5 @@ public class VmaConstants {
      */
 
     public static String NOTIFY_DIRECTION = "com.uct.vma.notify.direction";
+    public static String NOTIFY_SHOW_TRACK = "com.uct.vma.notify.showtrack";
 }

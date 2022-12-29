@@ -32,6 +32,7 @@ import androidx.core.content.res.ResourcesCompat;
 
 import com.esri.arcgisruntime.geometry.Point;
 import com.vma.smartfishingapp.R;
+import com.vma.smartfishingapp.VmaApplication;
 import com.vma.smartfishingapp.ui.component.MyToast;
 
 import java.io.FileInputStream;
@@ -77,7 +78,12 @@ public class Utility {
     }
 
     public static Date getDate(String pDate){
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        Locale locale = new Locale("en");
+        if (Objects.equals(VmaApplication.language, VmaLanguage.INDONESIA)){
+            locale = new Locale("id");
+        }
+
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", locale);
         try {
             return format.parse(pDate.replace("T"," ").split("\\.")[0]);
         } catch (ParseException e) {
@@ -86,7 +92,11 @@ public class Utility {
         return new Date();
     }
     public static Date getDate(String pDate, String inputFormat){
-        DateFormat format = new SimpleDateFormat(inputFormat, Locale.getDefault());
+        Locale locale = new Locale("en");
+        if (Objects.equals(VmaApplication.language, VmaLanguage.INDONESIA)){
+            locale = new Locale("id");
+        }
+        DateFormat format = new SimpleDateFormat(inputFormat, locale);
         try {
             return format.parse(pDate.replace("T"," ").split("\\.")[0]);
         } catch (ParseException e) {
@@ -96,7 +106,11 @@ public class Utility {
     }
 
     public static String getDateString(Date date, String sFormat){
-        DateFormat format = new SimpleDateFormat(sFormat, Locale.getDefault());
+        Locale locale = new Locale("en");
+        if (Objects.equals(VmaApplication.language, VmaLanguage.INDONESIA)){
+            locale = new Locale("id");
+        }
+        DateFormat format = new SimpleDateFormat(sFormat, locale);
         return format.format(date);
     }
 

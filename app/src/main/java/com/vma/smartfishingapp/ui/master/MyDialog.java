@@ -5,6 +5,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import androidx.annotation.NonNull;
+
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,7 +51,12 @@ public abstract class MyDialog extends Dialog {
 
     @Override
     public void show() {
-        super.show();
+        Log.d("MyDialog", "Show at "+ mActivity.getClass().getSimpleName());
+        try {
+            super.show();
+        }catch (WindowManager.BadTokenException e){
+            Log.e("MyDialog", "Failed to showing dialog "+ e.getMessage());
+        }
     }
 
     protected abstract int setLayout();

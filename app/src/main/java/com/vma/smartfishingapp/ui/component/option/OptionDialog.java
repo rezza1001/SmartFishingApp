@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.AnimationUtils;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -19,6 +20,7 @@ public class OptionDialog extends MyDialog {
 
     private OnSelectListener onSelectListener;
 
+    private TextView txvw_title;
     private RecyclerView rcvw_menu;
     private CardView card_body;
     private OptionAdapter adapter;
@@ -44,6 +46,8 @@ public class OptionDialog extends MyDialog {
         rcvw_menu = view.findViewById(R.id.rcvw_menu);
         rcvw_menu.setLayoutManager(new LinearLayoutManager(mActivity));
 
+        txvw_title = view.findViewById(R.id.txvw_title);
+        txvw_title.setVisibility(View.GONE);
 
     }
 
@@ -70,6 +74,11 @@ public class OptionDialog extends MyDialog {
         bundle.putString("value", value);
         listOption.add(bundle);
         adapter.notifyItemInserted(listOption.size());
+    }
+
+    public void setNameTitle(String title){
+        txvw_title.setVisibility(View.VISIBLE);
+        txvw_title.setText(title);
     }
 
     public void setOnSelectListener(OnSelectListener onSelectListener){

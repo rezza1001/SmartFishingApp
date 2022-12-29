@@ -194,7 +194,6 @@ public class CenterPointView extends MyView {
             }
 
         });
-
     }
 
     private OnCenterInfoListener onCenterInfoListener;

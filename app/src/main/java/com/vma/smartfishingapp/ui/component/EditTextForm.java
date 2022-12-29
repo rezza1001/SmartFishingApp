@@ -74,6 +74,7 @@ public class EditTextForm extends MyView {
 
     public void hideTitle(){
         lnly_title.setVisibility(GONE);
+        txvw_required.setVisibility(GONE);
     }
 
     public void setRequired(){
@@ -162,7 +163,7 @@ public class EditTextForm extends MyView {
             edtx_form.setMinLines(2);
         }
         else if (type == Type.NUMBER_DECIMAL){
-            edtx_form.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+            edtx_form.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED);
             edtx_form.setMinLines(2);
         }
         else if (type == Type.SELECT){

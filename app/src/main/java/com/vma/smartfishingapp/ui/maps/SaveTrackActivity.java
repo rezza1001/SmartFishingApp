@@ -3,19 +3,41 @@ package com.vma.smartfishingapp.ui.maps;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Handler;
+import android.util.Log;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
+
+import com.esri.arcgisruntime.ArcGISRuntimeEnvironment;
+import com.esri.arcgisruntime.geometry.PointCollection;
+import com.esri.arcgisruntime.geometry.Polyline;
+import com.esri.arcgisruntime.geometry.SpatialReferences;
+import com.esri.arcgisruntime.layers.FeatureLayer;
+import com.esri.arcgisruntime.loadable.LoadStatus;
+import com.esri.arcgisruntime.mapping.ArcGISMap;
+import com.esri.arcgisruntime.mapping.LoadSettings;
+import com.esri.arcgisruntime.mapping.MobileMapPackage;
+import com.esri.arcgisruntime.mapping.view.Graphic;
+import com.esri.arcgisruntime.mapping.view.GraphicsOverlay;
+import com.esri.arcgisruntime.mapping.view.MapView;
+import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
+import com.esri.arcgisruntime.symbology.SimpleLineSymbol;
+import com.esri.arcgisruntime.util.ListenableList;
 import com.vma.smartfishingapp.R;
-import com.vma.smartfishingapp.ui.component.VmaButton;
-import com.vma.smartfishingapp.ui.component.VmaEditext;
 import com.vma.smartfishingapp.database.table.TrackDB;
 import com.vma.smartfishingapp.dom.VmaConstants;
 import com.vma.smartfishingapp.libs.FileProcessing;
+import com.vma.smartfishingapp.libs.LocationConverter;
 import com.vma.smartfishingapp.libs.MyFileReader;
 import com.vma.smartfishingapp.libs.Utility;
 import com.vma.smartfishingapp.libs.VmaPreferences;
-import com.vma.smartfishingapp.ui.master.MyActivity;
 import com.vma.smartfishingapp.service.TrackRecordService;
+import com.vma.smartfishingapp.ui.component.Loading;
+import com.vma.smartfishingapp.ui.component.VmaButton;
+import com.vma.smartfishingapp.ui.component.VmaEditext;
+import com.vma.smartfishingapp.ui.master.MyActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,16 +50,25 @@ import java.util.Date;
 
 public class SaveTrackActivity extends MyActivity {
 
+    private MapView mapvw_arcgis;
+    private final double MAX_SCALE = 3000000;
+    private final double MIN_SCALE = 5000;
+    private final int [] mMapScale = {5000, 10000, 20000, 40000, 80000,160000,320000,640000,1280000,1500000,2000000,3000000};
+
     private VmaEditext edtx_name;
     private TextView txvw_date,txvw_startTime,txvw_speed,txvw_time,txvw_endTime,txvw_distance;
     private VmaButton bbtn_save,bbtn_cancel;
-    String mStartPosition = "";
-    String mEndPosition = "";
-    Date startDate;
-    Date endDate;
-    float calSpeed = 0;
+    private  String mStartPosition = "";
+    private  String mEndPosition = "";
+    private Date startDate;
+    private Date endDate;
+    private float calSpeed = 0;
     ArrayList<Integer> listSpeed = new ArrayList<>();
+    PointCollection recordPosition = new PointCollection(SpatialReferences.getWgs84());
+    private SimpleLineSymbol mRecordLine;
+    private GraphicsOverlay graphicsOverlayRecordTrack,graphicsOverlayTrackMarker;
 
+    private TrackDB dbExisting;
 
     @Override
     protected int setLayout() {
@@ -46,6 +77,9 @@ public class SaveTrackActivity extends MyActivity {
 
     @Override
     protected void initLayout() {
+
+        mapvw_arcgis = findViewById(R.id.map_static);
+
         edtx_name = findViewById(R.id.edtx_name);
         txvw_date = findViewById(R.id.txvw_no);
         bbtn_save = findViewById(R.id.bbtn_save);
@@ -64,6 +98,16 @@ public class SaveTrackActivity extends MyActivity {
         bbtn_cancel.create(getResources().getString(R.string.cancel),0);
         bbtn_cancel.setButtonType(VmaButton.ButtonType.BLUE_GREY);
 
+        //  Recording Track Overlay
+        graphicsOverlayRecordTrack = new GraphicsOverlay(GraphicsOverlay.RenderingMode.STATIC);
+        mapvw_arcgis.getGraphicsOverlays().add(graphicsOverlayRecordTrack);
+        //  Recording Track Overlay
+        graphicsOverlayTrackMarker = new GraphicsOverlay(GraphicsOverlay.RenderingMode.STATIC);
+        mapvw_arcgis.getGraphicsOverlays().add(graphicsOverlayTrackMarker);
+
+        //  Record Track Line
+        mRecordLine  = new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, Color.parseColor("#aa00ff"), 2);
+
 
     }
 
@@ -75,17 +119,19 @@ public class SaveTrackActivity extends MyActivity {
     @Override
     protected void initListener() {
         findViewById(R.id.rvly_back).setOnClickListener(view -> onBackPressed());
-        bbtn_save.setOnActionListener(view -> {
-            save();
-        });
-        bbtn_cancel.setOnActionListener(view -> {
-            mActivity.finish();
-        });
+        bbtn_save.setOnActionListener(view -> save());
+        bbtn_cancel.setOnActionListener(view -> mActivity.finish());
     }
 
     private void save(){
         if (edtx_name.getValue().isEmpty()){
             Utility.showToastError(mActivity,"Please input Track Name");
+            return;
+        }
+        if (dbExisting != null){ // Update
+            dbExisting.name  = edtx_name.getValue();
+            dbExisting.update(mActivity);
+            notifyUI();
             return;
         }
         String fromPath = FileProcessing.getRootPath(mActivity)+ TrackRecordService.folderName+"/"+TrackRecordService.fileName;
@@ -103,28 +149,41 @@ public class SaveTrackActivity extends MyActivity {
             db.filePath      = toPath;
 
             db.insert(mActivity);
-
-
-            Utility.showToastSuccess(mActivity,"Success");
-            Intent intent = new Intent(VmaConstants.TRACK_RECORD_SAVE);
-            intent.putExtra("status",0);
-            sendBroadcast(intent);
-
-            mActivity.finish();
+            notifyUI();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    private void notifyUI(){
+        Utility.showToastSuccess(mActivity,"Success");
+        Intent intent = new Intent(VmaConstants.TRACK_RECORD_SAVE);
+        intent.putExtra("status",0);
+        sendBroadcast(intent);
+
+        mActivity.finish();
+    }
+
     private void loadFileTrack(){
+        String recordPath = FileProcessing.getRootPath(mActivity)+TrackRecordService.folderName+"/"+TrackRecordService.fileName;
+        int id =  getIntent().getIntExtra("id",0);
+        if (id > 0){
+            dbExisting = new TrackDB();
+            dbExisting.getData(mActivity, id);
+            recordPath = dbExisting.filePath;
+            VmaPreferences.save(mActivity, VmaConstants.TRACKING_DISTANCE, dbExisting.distance);
+            edtx_name.setValue(dbExisting.name);
+        }
 
         MyFileReader fileReader = new MyFileReader(mActivity);
         fileReader.setOnReadListener(new MyFileReader.OnReadListener() {
             @Override
             public void onLiveRead(String data) {
                 try {
-                    JSONObject joStart = new JSONObject(data);
-                    listSpeed.add(joStart.getInt("speed"));
+                    JSONObject jo = new JSONObject(data);
+                    listSpeed.add(jo.getInt("speed"));
+                    LocationConverter converter = new LocationConverter(jo.getString("longitude"),jo.getString("latitude"));
+                    recordPosition.add(converter.getPoint());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -134,10 +193,12 @@ public class SaveTrackActivity extends MyActivity {
             @Override
             public void onFinish(String start, String data, String end) {
                 mEndPosition = end;
-                mStartPosition = data;
+                mStartPosition = start;
+
+                Log.d(TAG,"mStartPosition "+mStartPosition);
 
                 try {
-                    JSONObject joStart = new JSONObject(data);
+                    JSONObject joStart = new JSONObject(start);
                     startDate = Utility.getDate(joStart.getString("date"),"dd-MM-yyyy HH:mm:ss"); // 11-05-2022 10:07:53
 
                     JSONObject joEnd = new JSONObject(end);
@@ -160,6 +221,8 @@ public class SaveTrackActivity extends MyActivity {
                     txvw_startTime.setText(Utility.getDateString(startDate,"HH:mm:ss"));
                     txvw_endTime.setText(Utility.getDateString(endDate,"HH:mm:ss"));
                     txvw_distance.setText(VmaPreferences.getFloat(mActivity,VmaConstants.TRACKING_DISTANCE)+" NM");
+
+                    initMap();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -167,8 +230,125 @@ public class SaveTrackActivity extends MyActivity {
             }
         });
 
-        String recordPath = FileProcessing.getRootPath(mActivity)+TrackRecordService.folderName+"/"+TrackRecordService.fileName;
+
         fileReader.readFile(recordPath);
     }
+
+    private void initMap(){
+        try {
+            String licenseKey = "runtimelite,1000,rud8679770455,none,ZZ0RJAY3FLJ1H2RGJ062";
+            ArcGISRuntimeEnvironment.setLicense(licenseKey);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        File f = new File(mActivity.getCacheDir()+ "/"+VmaConstants.MAPS_CONFIG);
+
+        MobileMapPackage  mapPackage = new MobileMapPackage(f.getAbsolutePath());
+        mapPackage.loadAsync();
+        mapPackage.addDoneLoadingListener(() -> {
+            Loading.cancelLoading();
+            if (mapPackage.getLoadStatus() == LoadStatus.LOADED && !mapPackage.getMaps().isEmpty()) {
+                ArcGISMap map= mapPackage.getMaps().get(0);
+                //  map view setting
+                map.setMinScale(MAX_SCALE);
+                map.setMaxScale(MIN_SCALE);
+
+                LoadSettings loadSettings = new LoadSettings();
+                loadSettings.setPreferredPointFeatureRenderingMode(FeatureLayer.RenderingMode.AUTOMATIC);
+                loadSettings.setPreferredPolygonFeatureRenderingMode(FeatureLayer.RenderingMode.AUTOMATIC);
+                loadSettings.setPreferredPolylineFeatureRenderingMode(FeatureLayer.RenderingMode.AUTOMATIC);
+                map.setLoadSettings(loadSettings);
+                mapvw_arcgis.setMap(map);
+
+                showLineTrack();
+                showMarker();
+
+                new Handler().postDelayed(() -> {
+                    try {
+                        JSONObject   jo = new JSONObject(mStartPosition);
+                        LocationConverter converter = new LocationConverter(jo.getString("longitude"),jo.getString("latitude"));
+                        setZoom();
+                        mapvw_arcgis.setViewpointCenterAsync(converter.getPoint());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                },500);
+
+            }
+        });
+    }
+
+    private void showLineTrack(){
+        Polyline polyline       = new Polyline(recordPosition);
+        Graphic graphicRoute    = new Graphic(polyline, mRecordLine);
+
+        ListenableList<Graphic> graphicList = graphicsOverlayRecordTrack.getGraphics();
+        graphicList.clear();
+        graphicList.add(graphicRoute);
+    }
+
+    private void showMarker(){
+
+        try {
+            JSONObject joStart = new JSONObject(mStartPosition);
+            LocationConverter convStart = new LocationConverter(joStart.getString("longitude"),joStart.getString("latitude"));
+
+            Graphic startGraphic = new Graphic(convStart.getPoint(), getWayPointMarker(R.drawable.track_start));
+            graphicsOverlayTrackMarker.getGraphics().add(startGraphic);
+
+            JSONObject joEnd = new JSONObject(mEndPosition);
+            LocationConverter convEnd = new LocationConverter(joEnd.getString("longitude"),joEnd.getString("latitude"));
+            Graphic endGraphic = new Graphic(convEnd.getPoint(), getWayPointMarker(R.drawable.track_end));
+            graphicsOverlayTrackMarker.getGraphics().add(endGraphic);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private PictureMarkerSymbol getWayPointMarker(int resource){
+        BitmapDrawable bitmapDrawable = (BitmapDrawable) ContextCompat.getDrawable(mActivity, resource);
+        PictureMarkerSymbol mSymbolTargetPos = new PictureMarkerSymbol(bitmapDrawable);
+        mSymbolTargetPos.setHeight(24);
+        mSymbolTargetPos.setWidth(24);
+        mSymbolTargetPos.loadAsync();
+        return mSymbolTargetPos;
+    }
+
+    private void setZoom(){
+        float distance = VmaPreferences.getFloat(mActivity,VmaConstants.TRACKING_DISTANCE);
+        int zoom = 10;
+        if (distance <= 2){
+            zoom = 0;
+        }
+        else if (distance <= 4){
+            zoom = 2;
+        }
+        else if (distance <= 6){
+            zoom = 3;
+        }
+        else if (distance <= 8){
+            zoom = 4;
+        }
+        else if (distance <= 10){
+            zoom = 5;
+        }
+        else if (distance <= 12){
+            zoom = 6;
+        }
+        else if (distance <= 15){
+            zoom = 7;
+        }
+        else if (distance <= 20){
+            zoom = 8;
+        }
+
+        long scele = mMapScale[zoom];
+        Log.d(TAG,"SCELE "+zoom+" = "+ scele);
+        mapvw_arcgis.setViewpointScaleAsync(scele);
+    }
+
 
 }

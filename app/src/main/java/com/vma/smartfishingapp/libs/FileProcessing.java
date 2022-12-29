@@ -541,7 +541,11 @@ public class FileProcessing {
                 Log.d("FileProcessing","Create new file Logs ("+logFile.getName()+") "+createFile);
             } catch (IOException e) {
                 e.printStackTrace();
+                Log.e("FileProcessing","Create new file Logs ("+logFile.getName()+") failed ");
             }
+        }
+        else {
+            Log.i("FileProcessing","Create new file Logs ("+logFile.getName()+") exists");
         }
         try {
             BufferedWriter buf = new BufferedWriter(new FileWriter(logFile, true));

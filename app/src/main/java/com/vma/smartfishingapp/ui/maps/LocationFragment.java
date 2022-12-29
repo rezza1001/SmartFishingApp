@@ -3,17 +3,19 @@ package com.vma.smartfishingapp.ui.maps;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.SpannableString;
 import android.view.View;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.esri.arcgisruntime.geometry.Point;
+import com.balysv.materialripple.MaterialRippleLayout;
 import com.vma.smartfishingapp.R;
 import com.vma.smartfishingapp.database.table.DirectionDB;
 import com.vma.smartfishingapp.database.table.LocationDB;
 import com.vma.smartfishingapp.dom.VmaConstants;
-import com.vma.smartfishingapp.libs.DistanceUnit;
+import com.vma.smartfishingapp.libs.Utility;
+import com.vma.smartfishingapp.ui.component.ConfirmDialog;
 import com.vma.smartfishingapp.ui.component.option.OptionDialog;
 import com.vma.smartfishingapp.ui.master.MyFragment;
 
@@ -22,6 +24,7 @@ import java.util.Date;
 
 public class LocationFragment extends MyFragment {
 
+    private MaterialRippleLayout mrly_add;
     private LocationAdapter adapter;
     private ArrayList<LocationHolder> listLocation = new ArrayList<>();
 
@@ -45,11 +48,15 @@ public class LocationFragment extends MyFragment {
 
         adapter = new LocationAdapter(mActivity, listLocation);
         rcvw_data.setAdapter(adapter);
+
+        mrly_add = view.findViewById(R.id.mrly_add);
+
     }
 
     @Override
     protected void initListener() {
         adapter.setOnSelectedListener(this::showOption);
+        mrly_add.setOnClickListener(view -> saveLocation());
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -80,9 +87,7 @@ public class LocationFragment extends MyFragment {
 
         dialog.setOnSelectListener((bundle, value) -> {
             if (value.equals(getResources().getString(R.string.delete))){
-                LocationDB db = new LocationDB();
-                db.delete(mActivity, holder.getId());
-                initData();
+                delete(holder);
             }
             else if (value.equals(getResources().getString(R.string.edit_location))){
                 editLocation(holder);
@@ -134,5 +139,29 @@ public class LocationFragment extends MyFragment {
 
     private void notifyDirection(){
         mActivity.sendBroadcast(new Intent(VmaConstants.NOTIFY_DIRECTION));
+    }
+    private void delete(LocationHolder holder){
+        String info = getResources().getString(R.string.are_you_sure_to_delete_location).replace("#X1",holder.getName());
+        int start   = info.indexOf(holder.getName());
+        int end     = start+ (holder.getName().length());
+
+        SpannableString spanInfo = Utility.BoldText(mActivity, info,start,end,"#F79E46");
+        ConfirmDialog dialog = new ConfirmDialog(mActivity);
+        dialog.show(getResources().getString(R.string.confirm),spanInfo);
+        dialog.setOnActionListener(confirm -> {
+            if (confirm){
+                LocationDB db = new LocationDB();
+                db.delete(mActivity, holder.getId());
+                initData();
+                Utility.showToastSuccess(mActivity, getResources().getString(R.string.success));
+            }
+        });
+    }
+
+    private void saveLocation(){
+
+        SaveLocationDialog dialog = new SaveLocationDialog(mActivity);
+        dialog.show(null);
+        dialog.setOnSaveListener(db -> initData());
     }
 }

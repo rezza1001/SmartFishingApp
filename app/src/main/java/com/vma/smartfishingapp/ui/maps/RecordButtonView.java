@@ -41,8 +41,7 @@ public class RecordButtonView extends MyView {
     }
 
     public void create(){
-        int tag = VmaPreferences.getInt(mActivity, VmaConstants.TRACKING_RECORD);
-        if (tag == 1){
+        if (TrackRecordService.isRecording){
             imvw_record.setImageResource(R.drawable.navi_stop_record);
             new Handler().postDelayed(() -> {
                 if (onRecordListener != null){
@@ -61,9 +60,7 @@ public class RecordButtonView extends MyView {
     }
 
     private void record(){
-        int tag = VmaPreferences.getInt(mActivity, VmaConstants.TRACKING_RECORD);
-        if (tag == 0){
-            VmaPreferences.save(mActivity,VmaConstants.TRACKING_RECORD,1);
+        if (!TrackRecordService.isRecording){
             imvw_record.setImageResource(R.drawable.navi_stop_record);
             startService();
         }
@@ -79,7 +76,6 @@ public class RecordButtonView extends MyView {
         confirmSaveTrackDialog.setOnActionListener(new ConfirmSaveTrackDialog.OnActionListener() {
             @Override
             public void OnSaveAction() {
-                VmaPreferences.save(mActivity,VmaConstants.TRACKING_RECORD,0);
                 imvw_record.setImageResource(R.drawable.navi_start_record);
                 stopService();
                 Intent intent = new Intent(mActivity, SaveTrackActivity.class);
@@ -99,7 +95,6 @@ public class RecordButtonView extends MyView {
     }
 
     private void stopAndClearData(){
-        VmaPreferences.save(mActivity,VmaConstants.TRACKING_RECORD,0);
         imvw_record.setImageResource(R.drawable.navi_start_record);
         stopService();
 

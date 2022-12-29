@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.vma.smartfishingapp.R;
+import com.vma.smartfishingapp.VmaApplication;
 import com.vma.smartfishingapp.dom.VmaApiConstant;
 import com.vma.smartfishingapp.dom.VmaConstants;
 import com.vma.smartfishingapp.libs.Compass;
@@ -71,6 +72,15 @@ public class CompassFragment extends MyFragment {
     @Override
     protected void initListener() {
         mCompass.setOnChangeListener((degree, azimuth, currentAzimuth, name, description) -> {
+//            float calculate = VmaApplication.LastBearing - degree;
+//            if (calculate < 0){
+//                calculate = calculate * -1;
+//            }
+//            if (calculate < 5){
+//                return;
+//            }
+            VmaApplication.LastBearing = degree;
+
             Animation anim = new RotateAnimation(-currentAzimuth, -azimuth,Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
             anim.setDuration(500);
             anim.setRepeatCount(0);

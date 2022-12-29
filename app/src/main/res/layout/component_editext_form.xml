@@ -34,7 +34,7 @@
         android:background="@drawable/editext_standard"
         android:fontFamily="@font/roboto"
         android:textSize="14sp"
-        android:hint="Input User ID"
+        android:hint=""
         android:inputType="text"
         android:textColor="@color/primaryDark"
         android:paddingStart="10dp"

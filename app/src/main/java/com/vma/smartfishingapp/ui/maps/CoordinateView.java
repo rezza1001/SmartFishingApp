@@ -15,7 +15,7 @@ import com.vma.smartfishingapp.ui.master.MyView;
 
 public class CoordinateView extends MyView {
 
-    private TextView txvw_longitude,txvw_latitude,txvw_speed;
+    private TextView txvw_longitude,txvw_latitude,txvw_speed,txvw_bearing;
     public CoordinateView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -30,6 +30,7 @@ public class CoordinateView extends MyView {
         txvw_longitude = findViewById(R.id.txvw_longitude);
         txvw_latitude = findViewById(R.id.txvw_latitude);
         txvw_speed = findViewById(R.id.txvw_speed);
+        txvw_bearing = findViewById(R.id.txvw_bearing);
     }
 
     public void create(){
@@ -37,6 +38,7 @@ public class CoordinateView extends MyView {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             card_coordinate.setOutlineSpotShadowColor(ContextCompat.getColor(mActivity, R.color.primaryDark));
         }
+        setBearing(0);
     }
 
     @Override
@@ -58,5 +60,9 @@ public class CoordinateView extends MyView {
     @SuppressLint("SetTextI18n")
     public void setSpeed(double speed){
         txvw_speed.setText(""+speed);
+    }
+
+    public void setBearing(float bearing){
+        txvw_bearing.setText(String.valueOf(bearing));
     }
 }

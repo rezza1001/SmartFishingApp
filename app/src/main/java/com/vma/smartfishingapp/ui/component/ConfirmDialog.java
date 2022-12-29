@@ -1,6 +1,7 @@
 package com.vma.smartfishingapp.ui.component;
 
 import android.content.Context;
+import android.text.SpannableString;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
@@ -65,6 +66,15 @@ public class ConfirmDialog extends MyDialog {
         card_body.setVisibility(View.VISIBLE);
         card_body.startAnimation(AnimationUtils.loadAnimation(mActivity, R.anim.zoom_in));
     }
+
+    public void show(String title, SpannableString value) {
+        super.show();
+        txvw_title.setText(title);
+        txvw_body.setText(value);
+        card_body.setVisibility(View.VISIBLE);
+        card_body.startAnimation(AnimationUtils.loadAnimation(mActivity, R.anim.zoom_in));
+    }
+
     public void show( String value) {
         show(mActivity.getResources().getString(R.string.confirm), value);
     }

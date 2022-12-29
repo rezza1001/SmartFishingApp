@@ -72,6 +72,9 @@ public class SaveLocationDialog extends MyDialog {
         card_body.setVisibility(View.VISIBLE);
         card_body.startAnimation(AnimationUtils.loadAnimation(mActivity, R.anim.push_up_in));
 
+        if (point == null){
+            return;
+        }
         input_longitude.setValue(point.getX());
         input_latitude.setValue(point.getY());
 
@@ -110,6 +113,14 @@ public class SaveLocationDialog extends MyDialog {
 
         if (db.name.isEmpty()){
             Utility.showToastError(mActivity,"Name required");
+            return;
+        }
+        if (db.latitude == 0){
+            Utility.showToastError(mActivity,"Latitude required");
+            return;
+        }
+        if (db.longitude == 0){
+            Utility.showToastError(mActivity,"Longitude required");
             return;
         }
 

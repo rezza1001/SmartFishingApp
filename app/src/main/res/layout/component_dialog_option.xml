@@ -38,6 +38,20 @@
                     android:layout_height="3dp"/>
             </RelativeLayout>
 
+            <TextView
+                android:id="@+id/txvw_title"
+                android:text="Title Here"
+                android:textSize="16sp"
+                android:layout_marginBottom="10dp"
+                android:textColor="@color/text_standard"
+                android:fontFamily="@font/roboto_medium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+            <View
+                android:background="@color/line"
+                android:layout_marginBottom="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"/>
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rcvw_menu"
                 android:layout_width="match_parent"

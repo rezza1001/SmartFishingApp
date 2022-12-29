@@ -202,6 +202,11 @@ public class MainActivity extends MyActivity {
         }
     };
 
+    @Override
+    public void onBackPressed() {
+        moveTaskToBack(true);
+    }
+
 
     private void checkGPS(){
 //        GpsUtils gpsUtils = new GpsUtils(mActivity);

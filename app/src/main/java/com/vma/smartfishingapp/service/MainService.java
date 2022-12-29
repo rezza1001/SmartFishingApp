@@ -10,6 +10,7 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.vma.smartfishingapp.VmaApplication;
 import com.vma.smartfishingapp.dom.VMA_COMMAND;
 import com.vma.smartfishingapp.dom.VmaApiConstant;
 import com.vma.smartfishingapp.dom.VmaConstants;
@@ -48,7 +49,7 @@ public class MainService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        loadDummy();
+//        loadDummy();
 
         if (permission){
             startGPSRequestLocation();
@@ -117,16 +118,25 @@ public class MainService extends Service {
                 jo.put(VmaApiConstant.GPS_ITEM_SPEED, 0);
             }
             jo.put(VmaApiConstant.GPS_ITEM_DATE, format.format(lastLocation.getTime()));
-            jo.put(VmaApiConstant.GPS_ITEM_BEARING,0);
+            float bearing;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                jo.put(VmaApiConstant.GPS_ITEM_BEARING, location.getBearingAccuracyDegrees());
+                bearing = location.getBearingAccuracyDegrees();
             }
+            else {
+                bearing = location.getBearing();
+            }
+            if (bearing == 0){
+                bearing = VmaApplication.LastBearing;
+            }
+
+            jo.put(VmaApiConstant.GPS_ITEM_BEARING,bearing);
 
             if (listDummy.size() > 0){
                 if (indexDummy < listDummy.size()){
                     Bundle dummy = listDummy.get(indexDummy);
                     jo.put(VmaApiConstant.GPS_ITEM_LON, dummy.getDouble(VmaApiConstant.GPS_ITEM_LON));
                     jo.put(VmaApiConstant.GPS_ITEM_LAT, dummy.getDouble(VmaApiConstant.GPS_ITEM_LAT));
+//                    jo.put(VmaApiConstant.GPS_ITEM_BEARING, dummy.getInt(VmaApiConstant.GPS_ITEM_BEARING));
                 }
                 else {
                    indexDummy = 0;
@@ -168,12 +178,12 @@ public class MainService extends Service {
         for (String s : line){
             String sLat = s.split("~")[0];
             String sLon = s.split("~")[1];
-            String sBear = s.split("~")[2];
+            String sBear = s.split("~")[2].trim();
 
             Bundle bundle = new Bundle();
             bundle.putDouble(VmaApiConstant.GPS_ITEM_LON, Double.parseDouble(sLon));
             bundle.putDouble(VmaApiConstant.GPS_ITEM_LAT, Double.parseDouble(sLat));
-//            bundle.putInt(VmaApiConstant.GPS_ITEM_BEARING, Integer.parseInt(sBear));
+            bundle.putInt(VmaApiConstant.GPS_ITEM_BEARING, 0);
             listDummy.add(bundle);
         }
 

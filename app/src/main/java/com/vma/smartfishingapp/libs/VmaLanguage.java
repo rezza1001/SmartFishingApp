@@ -14,13 +14,16 @@ public class VmaLanguage {
     public static final String LANGUAGE = "vmaLanguage";
     public static final String CHANGE_LANGUAGE = "change_language";
 
+    public static final String INDONESIA = "us";
+    public static final String ENGLISH = "en";
+
     public static String getString(Context context, int res){
         return context.getResources().getString(res);
     }
 
     public static void init(Context context){
 
-        if (getLanguage(context).isEmpty() || getLanguage(context).equalsIgnoreCase("id")){
+        if (getLanguage(context).isEmpty() || getLanguage(context).equalsIgnoreCase(INDONESIA)){
             changeToIndonesia(context);
         }
         else {
@@ -36,7 +39,7 @@ public class VmaLanguage {
 
     public static String getCountry(Context context){
         String code = getLanguage(context);
-        if (code.equals("id")){
+        if (code.equals(INDONESIA)){
             return "Indonesia";
         }
         else {
@@ -45,8 +48,8 @@ public class VmaLanguage {
     }
 
     public static void changeToEnglish(Context context){
-        VmaPreferences.save(context, LANGUAGE, "en");
-        Locale locale = new Locale("en");
+        VmaPreferences.save(context, LANGUAGE, ENGLISH);
+        Locale locale = new Locale(ENGLISH);
         Locale.setDefault(locale);
         Configuration config = context.getResources().getConfiguration();
         config.locale = locale;
@@ -56,15 +59,15 @@ public class VmaLanguage {
 
         Log.d(LANGUAGE,"changeToEnglish from "+ VmaApplication.language+" to "+newConfig);
         if (!newConfig.equals(VmaApplication.language)){
-            VmaApplication.language = "en";
+            VmaApplication.language = ENGLISH;
             new Handler().postDelayed(() -> context.sendBroadcast(new Intent(CHANGE_LANGUAGE)),100);
         }
 
     }
     public static void changeToIndonesia(Context context){
 
-        VmaPreferences.save(context, LANGUAGE, "id");
-        Locale locale = new Locale("id");
+        VmaPreferences.save(context, LANGUAGE, INDONESIA);
+        Locale locale = new Locale(INDONESIA);
         Locale.setDefault(locale);
         Configuration config = context.getResources().getConfiguration();
         config.locale = locale;
@@ -74,7 +77,7 @@ public class VmaLanguage {
 
         Log.d(LANGUAGE,"changeToIndonesia from "+VmaApplication.language+" to "+newConfig);
         if (!newConfig.equals(VmaApplication.language)){
-            VmaApplication.language = "id";
+            VmaApplication.language = INDONESIA;
             new Handler().postDelayed(() -> context.sendBroadcast(new Intent(CHANGE_LANGUAGE)),100);
         }
     }
