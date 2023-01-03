@@ -63,11 +63,15 @@
         <activity android:name=".ui.maps.SaveTrackActivity" android:screenOrientation="nosensor"/>
         <activity android:name=".ui.weather.WeatherActivity" android:screenOrientation="nosensor"/>
         <activity android:name=".ui.dpi.DpiActivity" android:screenOrientation="nosensor"/>
+        <activity android:name=".ui.logbook.LogbookActivity" android:screenOrientation="nosensor"/>
+        <activity android:name=".ui.logbook.AddLogbookActivity" android:screenOrientation="nosensor"/>
+        <activity android:name=".ui.logbook.FindFishActivity" android:screenOrientation="nosensor"/>
 
         <service android:name=".service.TimerService" />
         <service android:name=".service.TrackRecordService" />
         <service android:name=".service.AuthService" />
         <service android:name=".service.MainService"  />
+<!--        <service android:name=".service.GpsService"  />-->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"

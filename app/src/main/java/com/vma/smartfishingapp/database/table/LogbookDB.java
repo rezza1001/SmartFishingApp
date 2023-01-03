@@ -13,18 +13,26 @@ import com.vma.smartfishingapp.database.MasterDB;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class TrackDetailDB extends MasterDB {
+public class LogbookDB extends MasterDB {
 
-    public static final String TAG          = "TrackDetailDB";
-    public static final String TABLE_NAME   = "TrackDetailDB";
+    public static final String TAG          = "LOGBOOK DB";
+    public static final String TABLE_NAME   = "LOGBOOK";
 
     public static final String ID = "_id";
-    public static final String TRACK_ID = "track_id";
+    public static final String FISHID = "_fish_id";
+    public static final String DATE = "_date";
+    public static final String TIME = "_time";
+    public static final String UNIT = "_unit";
+    public static final String QTY = "_qty";
     public static final String LONGITUDE = "longitude";
     public static final String LATITUDE = "latitude";
 
     public int id = 0;
-    public int trackId = 0;
+    public int fishId = 0;
+    public String date;
+    public String time;
+    public String unit;
+    public int qty;
     public double longitude = 0;
     public double latitude = 0;
 
@@ -32,7 +40,11 @@ public class TrackDetailDB extends MasterDB {
         String create = "create table " + TABLE_NAME + " "
                 + "(" +
                 " " + ID + " INTEGER DEFAULT 0," +
-                " " + TRACK_ID + " INTEGER DEFAULT 0," +
+                " " + FISHID + " INTEGER DEFAULT 0," +
+                " " + DATE + " varchar(20) NULL," +
+                " " + TIME + " varchar(20) NULL," +
+                " " + UNIT + " varchar(20) NULL," +
+                " " + QTY + " INTEGER DEFAULT 0," +
                 " " + LONGITUDE + " varchar(20) NULL," +
                 " " + LATITUDE + " varchar(20) NULL" +
                 "  )";
@@ -47,10 +59,14 @@ public class TrackDetailDB extends MasterDB {
 
     @SuppressLint("Range")
     @Override
-    protected TrackDetailDB build(Cursor res) {
-        TrackDetailDB jp = new TrackDetailDB();
+    protected LogbookDB build(Cursor res) {
+        LogbookDB jp = new LogbookDB();
         jp.id = res.getInt(res.getColumnIndex(ID));
-        jp.trackId = res.getInt(res.getColumnIndex(TRACK_ID));
+        jp.fishId = res.getInt(res.getColumnIndex(FISHID));
+        jp.date = res.getString(res.getColumnIndex(DATE));
+        jp.time = res.getString(res.getColumnIndex(TIME));
+        jp.unit = res.getString(res.getColumnIndex(UNIT));
+        jp.qty = res.getInt(res.getColumnIndex(QTY));
         jp.longitude = Double.parseDouble(res.getString(res.getColumnIndex(LONGITUDE)));
         jp.latitude = Double.parseDouble(res.getString(res.getColumnIndex(LATITUDE)));
         return jp;
@@ -60,7 +76,11 @@ public class TrackDetailDB extends MasterDB {
     @Override
     protected void buildSingle(Cursor res) {
         this.id = res.getInt(res.getColumnIndex(ID));
-        this.trackId = res.getInt(res.getColumnIndex(TRACK_ID));
+        this.fishId = res.getInt(res.getColumnIndex(FISHID));
+        this.date = res.getString(res.getColumnIndex(DATE));
+        this.time = res.getString(res.getColumnIndex(TIME));
+        this.unit = res.getString(res.getColumnIndex(UNIT));
+        this.qty = res.getInt(res.getColumnIndex(QTY));
         this.longitude = Double.parseDouble(res.getString(res.getColumnIndex(LONGITUDE)));
         this.latitude = Double.parseDouble(res.getString(res.getColumnIndex(LATITUDE)));
     }
@@ -68,7 +88,11 @@ public class TrackDetailDB extends MasterDB {
     public ContentValues createContentValues(){
         ContentValues contentValues = new ContentValues();
         contentValues.put(ID, id);
-        contentValues.put(TRACK_ID, trackId);
+        contentValues.put(FISHID, fishId);
+        contentValues.put(DATE, date);
+        contentValues.put(TIME, time);
+        contentValues.put(UNIT, unit);
+        contentValues.put(QTY, qty);
         contentValues.put(LONGITUDE, longitude);
         contentValues.put(LATITUDE, latitude);
         Log.d(TAG,"ContentValues = "+ contentValues);
@@ -77,26 +101,26 @@ public class TrackDetailDB extends MasterDB {
 
 
     public void delete(Context context, int id) {
-        super.delete(context, TRACK_ID +"= "+id+"");
+        super.delete(context, ID +"= "+id+"");
     }
     public void delete(Context context) {
-        super.delete(context, TRACK_ID +"= "+ trackId +"");
+        super.delete(context, ID +"= "+ fishId +"");
     }
 
     @Override
     public boolean insert(Context context) {
-        delete(context, trackId);
+        this.id = getNextID(context);
         return super.insert(context);
     }
 
 
 
-    public ArrayList<TrackDetailDB> getAll(Context context, int trackId){
-        ArrayList<TrackDetailDB> list = new ArrayList<>();
+    public ArrayList<LogbookDB> getAll(Context context){
+        ArrayList<LogbookDB> list = new ArrayList<>();
 
         DatabaseManager pDB = new DatabaseManager(context);
         SQLiteDatabase db = pDB.getReadableDatabase();
-        Cursor res = db.rawQuery("select * from " + TABLE_NAME +" where "+TRACK_ID+"="+trackId+" order by "+ ID +" DESC ", null);
+        Cursor res = db.rawQuery("select * from " + TABLE_NAME +" order by "+ ID +" DESC ", null);
         try {
             while (res.moveToNext()){
                 list.add(build(res));

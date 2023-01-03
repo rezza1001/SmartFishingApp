@@ -155,7 +155,7 @@ public class CenterPointView extends MyView {
         dialog.show(point);
     }
 
-    private void setDirection(double lng, double lat, Point point){
+    public void setDirection(double lng, double lat, Point point){
         DirectionDB db = new DirectionDB();
         if (db.getAll(mActivity).size() >= 1){
             directionOption(lng, lat, point);

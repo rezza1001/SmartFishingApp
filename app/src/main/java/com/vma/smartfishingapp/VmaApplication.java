@@ -7,6 +7,7 @@ import android.os.Build;
 import com.vma.smartfishingapp.dom.VmaConstants;
 import com.vma.smartfishingapp.libs.VmaLanguage;
 import com.vma.smartfishingapp.libs.VmaTheme;
+import com.vma.smartfishingapp.service.GpsService;
 import com.vma.smartfishingapp.service.MainService;
 import com.vma.smartfishingapp.service.TimerService;
 
@@ -27,6 +28,7 @@ public class VmaApplication extends Application {
         startService(new Intent(this, TimerService.class));
 
         startService(new Intent(this, MainService.class));
+//        startService(new Intent(this, GpsService.class));
         VmaLanguage.changeToIndonesia(this);
     }
 

@@ -73,6 +73,7 @@ public class VmaButton extends MyView {
         if (buttonType == ButtonType.STANDARD){
             txvw_bbtnTitile.setTextColor(Color.WHITE);
             rvly_button.setBackgroundResource(R.drawable.button_standard);
+            imvw_bbtnIcon.setColorFilter(Color.parseColor("#ffffff"));
         }
         if (buttonType == ButtonType.BLUE_GREY){
             txvw_bbtnTitile.setTextColor(Color.parseColor("#0064FE"));

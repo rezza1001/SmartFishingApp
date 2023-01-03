@@ -220,7 +220,7 @@ public class DirectionStatusView extends MyView {
         ListenableList<Graphic> graphicList = overLayDirection.getGraphics();
         graphicList.clear();
 
-        for (DirectionDB holder : listDirection){
+        for (DirectionDB holder : listDirection) {
             LocationConverter locDestConverter = new LocationConverter(holder.longitude,holder.latitude);
             Graphic destGraphic = new Graphic(locDestConverter.getPoint(), mSymbolTargetPos);
             if (holder.isFinish){

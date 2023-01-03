@@ -2,6 +2,8 @@ package com.vma.smartfishingapp.ui.component;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.util.Log;
+import android.view.WindowManager;
 
 public class Loading {
     private static ProgressDialog g_progressDialog;
@@ -15,7 +17,13 @@ public class Loading {
         g_progressDialog.setMessage(msg);
         g_progressDialog.setCancelable(false);
         if (g_progressDialog != null){
-            g_progressDialog.show();
+            Log.d("MyDialog", "Show at "+ p_cContext.getClass().getSimpleName());
+            try {
+                g_progressDialog.show();
+            }catch (WindowManager.BadTokenException e){
+                Log.e("MyDialog", "Failed to showing dialog "+ e.getMessage());
+            }
+
         }
     }
 

@@ -96,7 +96,7 @@ public class MapFragment extends MyFragment {
     private SimpleLineSymbol mRecordLine;
     private PictureMarkerSymbol myPointerMarkerSymbol;
 
-
+    private TrackDB showTrack;
 
     public static MapFragment newInstance() {
         Bundle args = new Bundle();
@@ -144,6 +144,8 @@ public class MapFragment extends MyFragment {
         rvly_zoomOut.setOnClickListener(view -> zoomOut());
         rvly_zoomIn.setOnClickListener(view -> zoomIn());
         rvly_compassAction.setOnClickListener(view -> {
+            toMyLocation = false;
+            new Handler().postDelayed(() -> toMyLocation = true,5000);
             if (mNavigationMode == 0){
                 mNavigationMode = 1;
                 imvw_cursor.setImageLevel(0);
@@ -194,6 +196,13 @@ public class MapFragment extends MyFragment {
                 Point   pressPoint = screenToWGS84(e.getX(), e.getY());
                 GeometryEngine.contains(pressPoint,pressPoint);
                 mapvw_arcgis.setViewpointCenterAsync(pressPoint);
+            }
+
+            @Override
+            public boolean onSingleTapUp(MotionEvent e) {
+                Point   pressPoint = screenToWGS84(e.getX(), e.getY());
+                clickMarkerTrackRecord(pressPoint);
+                return super.onSingleTapUp(e);
             }
         });
 
@@ -282,9 +291,10 @@ public class MapFragment extends MyFragment {
             cursorBearing = jo.getInt(VmaApiConstant.GPS_ITEM_BEARING);
             covw_coordinate.setSpeed(speed);
             covw_coordinate.setBearing(cursorBearing);
-            if (dsvw_destination.isDirection()){
-                cursorBearing = dsvw_destination.getBearing();
-            }
+//            if (dsvw_destination.isDirection()){
+////                cursorBearing = dsvw_destination.getBearing();
+//                cursorBearing = dsvw_destination.getBearing() + x;
+//            }
 
 
             mCurrPoint = new Point( myLongitude, myLatitude, SpatialReferences.getWgs84());
@@ -460,6 +470,7 @@ public class MapFragment extends MyFragment {
                     Utility.showToastError(mActivity,"Data not found");
                     return;
                 }
+               showTrack = db;
                 showTrackRecorded(db.filePath);
             }
         }
@@ -575,9 +586,9 @@ public class MapFragment extends MyFragment {
         if(mNavigationMode == 1){
             Log.d(TAG,"myBearing "+ cursorBearing);
             mapvw_arcgis.setViewpointRotationAsync(cursorBearing);
-            myPointerMarkerSymbol.setAngle((float) cursorBearing);
+            myPointerMarkerSymbol.setAngle(cursorBearing);
         } else {
-            myPointerMarkerSymbol.setAngle((float) cursorBearing);
+            myPointerMarkerSymbol.setAngle(cursorBearing);
             mapvw_arcgis.setViewpointRotationAsync(0.0);
         }
     }
@@ -609,6 +620,29 @@ public class MapFragment extends MyFragment {
         Point mapPoint = mapvw_arcgis.screenToLocation(screenPoint);
         return (Point) GeometryEngine.project(mapPoint, SpatialReferences.getWgs84());
 
+    }
+
+    private void clickMarkerTrackRecord(Point point){
+        if (showTrack == null){
+            return;
+        }
+        ListenableList<Graphic> graphicList =  graphicsOverlayTrackMarker.getGraphics();
+        new MarkerClickHandler(graphicList, point, scalePosition, (index, indexPoint) -> {
+            TrackInfoDialog dialog = new TrackInfoDialog(mActivity);
+            dialog.show(showTrack,indexPoint == 0 );
+            dialog.setOnActionListener((actionType, lon, lat) -> {
+                if (actionType == TrackInfoDialog.ActionType.CLEAR_TRACK){
+                    graphicsOverlayTrackMarker.getGraphics().clear();
+                    graphicsOverlayRecordTrack.getGraphics().clear();
+                }
+                else if (actionType == TrackInfoDialog.ActionType.DIRECTION){
+                    Graphic graphic = graphicsOverlayTrackMarker.getGraphics().get(index);
+                    Point selectPoint = (Point) graphic.getGeometry();
+                    cnvw_centerPoint.setDirection(lon,lat,selectPoint);
+                }
+            });
+
+        });
     }
 
 }

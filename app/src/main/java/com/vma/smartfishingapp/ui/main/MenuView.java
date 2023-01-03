@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.vma.smartfishingapp.R;
 import com.vma.smartfishingapp.ui.dpi.DpiActivity;
+import com.vma.smartfishingapp.ui.logbook.LogbookActivity;
 import com.vma.smartfishingapp.ui.maps.MainMapActivity;
 import com.vma.smartfishingapp.ui.weather.WeatherActivity;
 import com.vma.smartfishingapp.ui.main.MenuAdapter;
@@ -100,7 +101,7 @@ public class MenuView extends MyView {
             startToActivity(new Intent(mActivity, DpiActivity.class));
         }
         else if (holder.menu == MenuHolder.MENU.LOGBOOK){
-//            startToActivity(new Intent(mActivity, LogbookActivity.class));
+            startToActivity(new Intent(mActivity, LogbookActivity.class));
         }
         else if (holder.menu == MenuHolder.MENU.SOS){
 //            startToActivity(new Intent(mActivity, MainSosActivity.class));

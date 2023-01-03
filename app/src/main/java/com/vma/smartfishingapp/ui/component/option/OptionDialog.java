@@ -75,6 +75,10 @@ public class OptionDialog extends MyDialog {
         listOption.add(bundle);
         adapter.notifyItemInserted(listOption.size());
     }
+    public void addChooser( Bundle bundle ){
+        listOption.add(bundle);
+        adapter.notifyItemInserted(listOption.size());
+    }
 
     public void setNameTitle(String title){
         txvw_title.setVisibility(View.VISIBLE);

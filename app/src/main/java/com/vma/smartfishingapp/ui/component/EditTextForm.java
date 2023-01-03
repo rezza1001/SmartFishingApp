@@ -71,6 +71,18 @@ public class EditTextForm extends MyView {
         txvw_title.setText(title);
         edtx_form.setHint("Input "+ title);
     }
+    public void create(String title, int titleColor, int valueColor){
+        super.create();
+        if (title.isEmpty()){
+            hideTitle();
+            return;
+        }
+
+        txvw_title.setText(title);
+        txvw_title.setTextColor(titleColor);
+        edtx_form.setTextColor(valueColor);
+        edtx_form.setHint("Input "+ title);
+    }
 
     public void hideTitle(){
         lnly_title.setVisibility(GONE);
@@ -128,6 +140,7 @@ public class EditTextForm extends MyView {
     public void setValue(String value){
         if (edtx_form.getVisibility() == GONE){
             txvw_select.setText(value);
+            txvw_select.setTag(value);
         }
         else {
             edtx_form.setText(value);

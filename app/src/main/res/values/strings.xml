@@ -123,10 +123,22 @@
     <string name="edit_location">Ubah Lokasi</string>
     <string name="edit_name">Ubah Name</string>
     <string name="delete">Hapus</string>
+    <string name="delete_logbook">Hapus Logbook</string>
     <string name="move_location">Pindah Lokasi Tujuan</string>
     <string name="add_location">Tambah Lokasi Tujuan</string>
     <string name="are_you_sure_to_delete_track">Anda yakin untuk menghapus track #X1 dari daftar</string>
     <string name="are_you_sure_to_delete_location">Anda yakin untuk menghapus lokasi #X1 dari daftar</string>
+    <string name="are_you_sure_to_delete_logbook">Anda yakin untuk menghapus data #X1 dari daftar logbook</string>
     <string name="success">Proses Berhasil</string>
     <string name="add">Tambah</string>
+    <string name="route_name">Nama Rute</string>
+    <string name="close_route">Tutup Rute</string>
+    <string name="position">Posisi</string>
+    <string name="starting_point">Titik Awal</string>
+    <string name="end_point">Titik Akhir</string>
+    <string name="duration_time">Durasi Waktu</string>
+    <string name="e_logbook">E-Logbook</string>
+    <string name="fish_type">Jenis Ikan</string>
+    <string name="unit">Satuan</string>
+    <string name="quantity">Jumlah</string>
 </resources>
