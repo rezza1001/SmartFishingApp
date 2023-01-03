@@ -3,6 +3,7 @@ package com.vma.smartfishingapp.ui.logbook;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.text.SpannableString;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -112,7 +113,7 @@ public class LogbookActivity extends MyActivity {
             holder.setId(logbookDB.id);
             holder.setFishId(fishHolder.getId());
             holder.setFishName(fishHolder.getName());
-            holder.setType(UnitType.find(db.unit));
+            holder.setType(UnitType.find(logbookDB.unit));
             holder.setFishImage(fishHolder.getImageName());
             holder.setLongitude(logbookDB.longitude);
             holder.setLatitude(logbookDB.latitude);

@@ -9,7 +9,9 @@ import androidx.core.content.ContextCompat;
 
 import com.vma.smartfishingapp.R;
 import com.vma.smartfishingapp.database.table.LogbookDB;
+import com.vma.smartfishingapp.database.table.LogbookUploadDB;
 import com.vma.smartfishingapp.libs.Utility;
+import com.vma.smartfishingapp.service.LogbookService;
 import com.vma.smartfishingapp.service.MainService;
 import com.vma.smartfishingapp.ui.component.EditTextForm;
 import com.vma.smartfishingapp.ui.component.VmaButton;
@@ -158,10 +160,23 @@ public class AddLogbookActivity extends MyActivity {
         db.date = Utility.getDateString(mDate,"dd/MM/yyyy");
         db.insert(mActivity);
 
+        saveToStack(db.id);
+
         Utility.showToastSuccess(mActivity, getResources().getString(R.string.success));
         setResult(RESULT_OK);
         mActivity.finish();
 
 
+    }
+
+    private void saveToStack(int logbook){
+        LogbookUploadDB db = new LogbookUploadDB();
+        db.logboook = logbook;
+        db.insert(mActivity);
+
+
+        if (!LogbookService.isRunning){
+            startService(new Intent(mActivity, LogbookService.class));
+        }
     }
 }

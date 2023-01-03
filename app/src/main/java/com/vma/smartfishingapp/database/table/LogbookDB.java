@@ -104,7 +104,7 @@ public class LogbookDB extends MasterDB {
         super.delete(context, ID +"= "+id+"");
     }
     public void delete(Context context) {
-        super.delete(context, ID +"= "+ fishId +"");
+        super.delete(context, ID +"= "+ id +"");
     }
 
     @Override
@@ -134,6 +134,25 @@ public class LogbookDB extends MasterDB {
             pDB.close();
         }
         return list;
+    }
+
+    public void get(Context context, int id){
+
+        DatabaseManager pDB = new DatabaseManager(context);
+        SQLiteDatabase db = pDB.getReadableDatabase();
+        Cursor res = db.rawQuery("select * from " + TABLE_NAME +" WHERE "+ID+" ="+id, null);
+        try {
+            while (res.moveToNext()){
+                buildSingle(res);
+            }
+            pDB.close();
+        }catch (Exception e){
+            Log.d(TAG, Objects.requireNonNull(e.getMessage()));
+        }
+        finally {
+            res.close();
+            pDB.close();
+        }
     }
 
 

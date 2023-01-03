@@ -71,6 +71,7 @@
         <service android:name=".service.TrackRecordService" />
         <service android:name=".service.AuthService" />
         <service android:name=".service.MainService"  />
+        <service android:name=".service.LogbookService"  />
 <!--        <service android:name=".service.GpsService"  />-->
         <provider
             android:name="androidx.core.content.FileProvider"
