@@ -66,6 +66,8 @@
         <activity android:name=".ui.logbook.LogbookActivity" android:screenOrientation="nosensor"/>
         <activity android:name=".ui.logbook.AddLogbookActivity" android:screenOrientation="nosensor"/>
         <activity android:name=".ui.logbook.FindFishActivity" android:screenOrientation="nosensor"/>
+        <activity android:name=".ui.location.LocationActivity" android:screenOrientation="nosensor"/>
+        <activity android:name=".ui.setting.MainSettingActivity" android:screenOrientation="nosensor"/>
 
         <service android:name=".service.TimerService" />
         <service android:name=".service.TrackRecordService" />

@@ -121,8 +121,6 @@ public class LogbookService extends Service {
                 Log.d("LogbookService","Logbook save "+ message);
             }
         });
-
-
     }
 
     private boolean isNetworkConnected() {

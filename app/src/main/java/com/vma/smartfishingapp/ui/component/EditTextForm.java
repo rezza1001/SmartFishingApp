@@ -176,7 +176,7 @@ public class EditTextForm extends MyView {
             edtx_form.setMinLines(2);
         }
         else if (type == Type.NUMBER_DECIMAL){
-            edtx_form.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED);
+            edtx_form.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
             edtx_form.setMinLines(2);
         }
         else if (type == Type.SELECT){

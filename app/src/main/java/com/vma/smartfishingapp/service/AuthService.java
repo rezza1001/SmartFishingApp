@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import com.vma.smartfishingapp.api.ApiConfig;
 import com.vma.smartfishingapp.api.PostManager;
 import com.vma.smartfishingapp.database.table.AccountDB;
+import com.vma.smartfishingapp.database.table.BlackBoxDB;
 import com.vma.smartfishingapp.dom.VmaApiConstant;
 import com.vma.smartfishingapp.libs.Utility;
 import com.vma.smartfishingapp.libs.VmaPreferences;
@@ -81,22 +82,39 @@ public class AuthService extends Service {
         }
 
         Log.d(TAG,"SPEED :"+speed+" menit : "+menit);
-        if (menit % 5 == 0 && speed >= 10){
-            Log.d(TAG,"Send in 5 minute ("+speed+") -> "+accountDB.imei +" ("+lat+","+lon+")");
+//        if (menit % 5 == 0 && speed >= 10){
+//            Log.d(TAG,"Send in 5 minute ("+speed+") -> "+accountDB.imei +" ("+lat+","+lon+")");
+//            sendToAPI(lon, lat, speed, course);
+//        }
+//        if (menit % 10 == 0  && (speed >= 5 &&  speed < 10)){
+//            Log.d(TAG,"Send in 10 minute ("+speed+") -> "+accountDB.imei +" ("+lat+","+lon+")");
+//            sendToAPI(lon, lat, speed, course);
+//        }
+//        if (menit % 30 == 0  && (speed >= 1 &&  speed < 5)){
+//            Log.d(TAG,"Send in 30 minute ("+speed+") -> "+accountDB.imei +" ("+lat+","+lon+")");
+//            sendToAPI(lon, lat, speed, course);
+//        }
+//        if (menit % 60 == 0 && speed < 1){
+//            Log.d(TAG,"Send in 60 minute ("+speed+") -> "+accountDB.imei +" ("+lat+","+lon+")");
+//            sendToAPI(lon, lat, speed, course);
+//            menit = 0;
+//        }
+
+        if (menit % 2 == 0 && speed >= 5){
             sendToAPI(lon, lat, speed, course);
         }
-        if (menit % 10 == 0  && (speed >= 5 &&  speed < 10)){
-            Log.d(TAG,"Send in 10 minute ("+speed+") -> "+accountDB.imei +" ("+lat+","+lon+")");
+        if (menit % 5 == 0  && (speed >= 3 &&  speed < 5)){
             sendToAPI(lon, lat, speed, course);
         }
-        if (menit % 30 == 0  && (speed >= 1 &&  speed < 5)){
-            Log.d(TAG,"Send in 30 minute ("+speed+") -> "+accountDB.imei +" ("+lat+","+lon+")");
+        if (menit % 15 == 0  && (speed < 3)){
             sendToAPI(lon, lat, speed, course);
         }
-        if (menit % 60 == 0 && speed < 1){
-            Log.d(TAG,"Send in 60 minute ("+speed+") -> "+accountDB.imei +" ("+lat+","+lon+")");
-            sendToAPI(lon, lat, speed, course);
+        if (menit % 60 == 0  ){
             menit = 0;
+
+            if (!isNetworkConnected()){
+                saveToBlackBox(lon,lat, speed, course);
+            }
         }
     }
 
@@ -118,6 +136,8 @@ public class AuthService extends Service {
         post.addParam("latitude", lat);
         post.addParam("speed", speed);
         post.addParam("course", course);
+        post.addParam("status", "Online");
+        post.addParam("note", "Automatic "+menit+" Menit");
         post.addParam("time", Utility.getDateString(new Date(),"yyyy-MM-dd HH:mm:ss"));
         post.showloading(false);
         post.exPost();
@@ -136,6 +156,15 @@ public class AuthService extends Service {
         return cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected();
     }
 
-
+    private void saveToBlackBox(double lon, double lat, double speed, double course){
+        BlackBoxDB db = new BlackBoxDB();
+        db.longitude = lon;
+        db.latitude = lat;
+        db.speed = speed;
+        db.course = course;
+        db.isUpload = false;
+        db.time = Utility.getDateString(new Date(),"yyyy-MM-dd HH:mm:ss");
+        db.insert(getApplicationContext());
+    }
 
 }

@@ -33,7 +33,6 @@ import com.vma.smartfishingapp.dom.MenuHolder;
 import com.vma.smartfishingapp.dom.VmaConstants;
 import com.vma.smartfishingapp.ui.master.MyActivity;
 import com.vma.smartfishingapp.service.AuthService;
-import com.vma.smartfishingapp.service.GpsUtils;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -41,7 +40,7 @@ public class MainActivity extends MyActivity {
 
     DateWidget widget_time;
     FrameLayout frame_compass;
-    MenuView menu_bottom,menu_bottom2;
+    MenuView menu_bottom_1, menu_bottom_0;
     VmaButton bbtn_login;
     RelativeLayout rvly_profile;
     TextView txvw_ship,txvw_owner;
@@ -60,8 +59,8 @@ public class MainActivity extends MyActivity {
         frame_compass = findViewById(R.id.frame_compass);
         addCompass();
 
-        menu_bottom = findViewById(R.id.menu_bottom);
-        menu_bottom2 = findViewById(R.id.menu_bottom2);
+        menu_bottom_1 = findViewById(R.id.menu_bottom);
+        menu_bottom_0 = findViewById(R.id.menu_bottom2);
         rvly_profile = findViewById(R.id.rvly_profile);
         txvw_ship = findViewById(R.id.txvw_ship);
         txvw_owner = findViewById(R.id.txvw_owner);
@@ -121,18 +120,15 @@ public class MainActivity extends MyActivity {
     }
 
     private void createMenu(){
-        menu_bottom.create(true);
-        menu_bottom.addMenu(new MenuHolder(MenuHolder.MENU.FISH_MAP,"Map",R.drawable.menu_map, createDrawable(R.drawable.menu_fishmap)));
-        menu_bottom.addMenu(new MenuHolder(MenuHolder.MENU.LOGBOOK,"eLogbook",R.drawable.ic_logbook, createDrawable(R.drawable.menu_logbook)));
-        menu_bottom.addMenu(new MenuHolder(MenuHolder.MENU.WEATHER,getResources().getString(R.string.weather),R.drawable.ic_weather, createDrawable(R.drawable.menu_weather)));
+        menu_bottom_0.create(true);
+        menu_bottom_0.addMenu(new MenuHolder(MenuHolder.MENU.FISH_MAP,"Map",R.drawable.menu_map, createDrawable(R.drawable.menu_fishmap)));
+        menu_bottom_0.addMenu(new MenuHolder(MenuHolder.MENU.LOGBOOK,"Logbook",R.drawable.ic_logbook, createDrawable(R.drawable.menu_logbook)));
+        menu_bottom_0.addMenu(new MenuHolder(MenuHolder.MENU.WEATHER,getResources().getString(R.string.weather),R.drawable.ic_weather, createDrawable(R.drawable.menu_weather)));
 
-        menu_bottom2.create(true);
-        menu_bottom2.addMenu(new MenuHolder(MenuHolder.MENU.MESSAGE,"DPI",R.drawable.ic_dpi, createDrawable(R.drawable.menu_message)));
-        menu_bottom2.addMenu(new MenuHolder(MenuHolder.MENU.SOS,"SOS",R.drawable.ic_sos, createDrawable(R.drawable.menu_sos)));
-        menu_bottom2.addMenu(new MenuHolder(MenuHolder.MENU.SETTING,getResources().getString(R.string.setting),R.drawable.ic_settings, createDrawable(R.drawable.menu_setting)));
-
-//        menu_bottom2.addMenu(new MenuHolder(MenuHolder.MENU.CAMERA,"Camera",R.drawable.ic_baseline_camera_24, createDrawable(R.drawable.menu_console)));
-//        menu_bottom2.addMenu(new MenuHolder(MenuHolder.MENU.GALLERY,"Gallery",R.drawable.ic_gallery, createDrawable(R.drawable.menu_fishmap)));
+        menu_bottom_1.create(true);
+        menu_bottom_1.addMenu(new MenuHolder(MenuHolder.MENU.DPI,"DPI",R.drawable.ic_dpi, createDrawable(R.drawable.menu_message)));
+        menu_bottom_1.addMenu(new MenuHolder(MenuHolder.MENU.LOCATION,"Lokasi",R.drawable.ic_pin_save, createDrawable(R.drawable.menu_sos)));
+        menu_bottom_1.addMenu(new MenuHolder(MenuHolder.MENU.SETTING,getResources().getString(R.string.setting),R.drawable.ic_settings, createDrawable(R.drawable.menu_setting)));
     }
 
     private Drawable createDrawable(int res){

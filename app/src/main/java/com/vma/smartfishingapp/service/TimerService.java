@@ -7,14 +7,22 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
 import android.os.IBinder;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 
+import com.vma.smartfishingapp.api.ApiConfig;
+import com.vma.smartfishingapp.api.PostManager;
+import com.vma.smartfishingapp.database.table.AccountDB;
+import com.vma.smartfishingapp.database.table.BlackBoxDB;
 import com.vma.smartfishingapp.dom.VmaConstants;
+import com.vma.smartfishingapp.libs.Utility;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -47,6 +55,7 @@ public class TimerService extends Service {
                 second++;
                 buildLocation();
                 if (second % 10 == 0) {
+                    checkBlackBox();
                     Intent intent = new Intent(VmaConstants.VMA_TIMER_TASK);
                     intent.putExtra(VmaConstants.SERVICE_DATA, 10);
                     sendBroadcast(intent);
@@ -108,5 +117,47 @@ public class TimerService extends Service {
         return bestLocation;
     }
 
+    private void checkBlackBox(){
+        if (isNetworkConnected()){
+            BlackBoxDB blackBoxDB = new BlackBoxDB();
+            ArrayList<BlackBoxDB> list =  blackBoxDB.getUnUpload(getApplicationContext());
+            if (list.size() > 0){
+                sendApi(list.get(0));
+            }
+        }
+    }
 
+    private boolean isNetworkConnected() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        return cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected();
+    }
+
+    private void sendApi(BlackBoxDB db){
+        AccountDB accountDB = new AccountDB();
+        accountDB.loadData(getApplicationContext());
+
+        PostManager post = new PostManager(getApplicationContext(), ApiConfig.POST_SAVE_BLACKBOX);
+        post.addParam("imei", accountDB.imei);
+        post.addParam("longitude", db.longitude);
+        post.addParam("latitude", db.latitude);
+        post.addParam("speed", db.speed);
+        post.addParam("course", db.course);
+        post.addParam("status", "Offline");
+        post.addParam("note", "Out of service network");
+        post.addParam("time", db.time);
+        post.showloading(false);
+        post.exPost();
+        post.setOnReceiveListener((obj, code, success, message) -> {
+            if (success){
+                Log.d("TimerService","sendLocationData Success");
+                db.isUpload = true;
+                db.update(getApplicationContext());
+
+                checkBlackBox();
+            }
+            else {
+                Log.d("TimerService","sendLocationData Failed "+ message);
+            }
+        });
+    }
 }

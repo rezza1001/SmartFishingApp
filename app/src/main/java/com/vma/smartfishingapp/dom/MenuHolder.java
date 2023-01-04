@@ -6,7 +6,7 @@ import android.graphics.drawable.Drawable;
  * Created by Mochamad Rezza Gumilang on 15/02/2022
  */
 public class MenuHolder {
-    public enum MENU  {MESSAGE, SETTING, SOS, LOGBOOK, FISH_MAP, WEATHER, CONSOLE, CAMERA, GALLERY}
+    public enum MENU  {MESSAGE, SETTING, SOS, LOGBOOK, FISH_MAP, WEATHER, DPI, CAMERA, LOCATION}
 
     public String name;
     public int icon = 0;

@@ -15,6 +15,7 @@ public class ApiConfig {
     public static final String POST_DPI = "mobile/dpi";
     public static final String POST_SAVE_POSITION = "mobile/position";
     public static final String POST_SAVE_LOGBOOK = "mobile/logbook";
+    public static final String POST_SAVE_BLACKBOX = "mobile/blackbox";
 
 
 }

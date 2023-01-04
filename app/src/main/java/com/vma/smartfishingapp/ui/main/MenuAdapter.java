@@ -1,6 +1,7 @@
 package com.vma.smartfishingapp.ui.main;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,6 +44,7 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.AdapterView>{
         final MenuHolder data = mList.get(position);
         holder.txvw_menu.setText(data.name);
         holder.imvw_iconMenu.setImageResource(data.icon);
+        holder.imvw_iconMenu.setColorFilter(Color.WHITE);
         holder.rvly_body.setBackground(data.background);
 
         holder.lnly_selectMenu.setOnClickListener(view -> {

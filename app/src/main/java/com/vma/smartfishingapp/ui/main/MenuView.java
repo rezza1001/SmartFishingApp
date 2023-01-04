@@ -11,8 +11,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.vma.smartfishingapp.R;
 import com.vma.smartfishingapp.ui.dpi.DpiActivity;
+import com.vma.smartfishingapp.ui.location.LocationActivity;
 import com.vma.smartfishingapp.ui.logbook.LogbookActivity;
 import com.vma.smartfishingapp.ui.maps.MainMapActivity;
+import com.vma.smartfishingapp.ui.setting.MainSettingActivity;
 import com.vma.smartfishingapp.ui.weather.WeatherActivity;
 import com.vma.smartfishingapp.ui.main.MenuAdapter;
 import com.vma.smartfishingapp.dom.MenuHolder;
@@ -97,14 +99,14 @@ public class MenuView extends MyView {
     }
 
     private void directTo(MenuHolder holder){
-        if (holder.menu == MenuHolder.MENU.MESSAGE){
+        if (holder.menu == MenuHolder.MENU.DPI){
             startToActivity(new Intent(mActivity, DpiActivity.class));
         }
         else if (holder.menu == MenuHolder.MENU.LOGBOOK){
             startToActivity(new Intent(mActivity, LogbookActivity.class));
         }
-        else if (holder.menu == MenuHolder.MENU.SOS){
-//            startToActivity(new Intent(mActivity, MainSosActivity.class));
+        else if (holder.menu == MenuHolder.MENU.LOCATION){
+            startToActivity(new Intent(mActivity, LocationActivity.class));
         }
         else if (holder.menu == MenuHolder.MENU.WEATHER){
             startToActivity(new Intent(mActivity, WeatherActivity.class));
@@ -122,23 +124,23 @@ public class MenuView extends MyView {
                 mActivity.startActivity( launchIntent );
             }
         }
-        else if (holder.menu == MenuHolder.MENU.GALLERY){
-            if (galleryPackage.isEmpty()){
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_VIEW);
-                intent.setType("image/*");
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                mActivity.startActivity(intent);
-            }
-            else {
-                Intent launchIntent = mActivity.getPackageManager().getLaunchIntentForPackage(galleryPackage);
-                mActivity.startActivity( launchIntent );
-            }
-        }
+//        else if (holder.menu == MenuHolder.MENU.GALLERY){
+//            if (galleryPackage.isEmpty()){
+//                Intent intent = new Intent();
+//                intent.setAction(Intent.ACTION_VIEW);
+//                intent.setType("image/*");
+//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                mActivity.startActivity(intent);
+//            }
+//            else {
+//                Intent launchIntent = mActivity.getPackageManager().getLaunchIntentForPackage(galleryPackage);
+//                mActivity.startActivity( launchIntent );
+//            }
+//        }
         else if (holder.menu == MenuHolder.MENU.SETTING){
 //            Intent launchIntent = mActivity.getPackageManager().getLaunchIntentForPackage(settingPackage);
-//            Intent intent = new Intent(mActivity, SettingActivity.class);
-//            mActivity.startActivity( intent );
+            Intent intent = new Intent(mActivity, MainSettingActivity.class);
+            mActivity.startActivity( intent );
         }
         else {
             Utility.showToastError(mActivity,"Under Development!");

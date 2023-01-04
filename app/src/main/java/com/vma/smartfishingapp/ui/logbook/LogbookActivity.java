@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.vma.smartfishingapp.R;
 import com.vma.smartfishingapp.database.table.LogbookDB;
+import com.vma.smartfishingapp.database.table.LogbookUploadDB;
 import com.vma.smartfishingapp.dom.DpiHolder;
 import com.vma.smartfishingapp.libs.Utility;
 import com.vma.smartfishingapp.service.MainService;
@@ -150,6 +151,9 @@ public class LogbookActivity extends MyActivity {
                 LogbookDB db = new LogbookDB();
                 db.delete(mActivity, holder.getId());
                 loadDB();
+
+                LogbookUploadDB dbUpload = new LogbookUploadDB();
+                dbUpload.deleteByLogbook(mActivity, holder.getId());
             }
         });
     }

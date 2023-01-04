@@ -3,6 +3,7 @@ package com.vma.smartfishingapp.ui.component;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -20,6 +21,7 @@ public class CoordinateInput extends MyView {
     private EditTextForm edtx_degree;
     private LinearLayout lnly_degree,lnly_minute,lnly_second;
     private int type = 1;
+    private int typeValue = -1;
 
     public CoordinateInput(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -53,7 +55,16 @@ public class CoordinateInput extends MyView {
 
     @Override
     protected void initListener() {
-
+        rg_location.setOnCheckedChangeListener((radioGroup, i) -> {
+            if (  rg_location.getCheckedRadioButtonId() == rb_negative.getId()){
+                Log.d("TAGRZ","Selected Negative ");
+                typeValue = -1;
+            }
+            else if (rg_location.getCheckedRadioButtonId() == rb_positive.getId()){
+                Log.d("TAGRZ","Selected Positive ");
+                typeValue = 1;
+            }
+        });
     }
 
     @Override
@@ -125,8 +136,17 @@ public class CoordinateInput extends MyView {
     }
 
     public void setValue(double value){
+        if (value < 0){
+            rb_negative.setChecked(true);
+            typeValue = -1;
+        }
+        else {
+            rb_positive.setChecked(true);
+            typeValue = 1;
+        }
+
         if (type == VmaGlobalConfig.FORMAT_COORDINATE_DEGREE){
-            edtx_degree.setValue(String.valueOf(value));
+            edtx_degree.setValue(String.valueOf(value * typeValue));
         }
         else if (type == VmaGlobalConfig.FORMAT_COORDINATE_SECONDS){
 
@@ -141,7 +161,7 @@ public class CoordinateInput extends MyView {
             if (edtx_degree.getValue().isEmpty()){
                 return 0;
             }
-            return Double.parseDouble(edtx_degree.getValue());
+            return Double.parseDouble(edtx_degree.getValue()) * typeValue;
         }
         else if (type == VmaGlobalConfig.FORMAT_COORDINATE_SECONDS){
             return 0;

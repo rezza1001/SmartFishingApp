@@ -10,10 +10,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.vma.smartfishingapp.R;
 import com.vma.smartfishingapp.api.ApiConfig;
 import com.vma.smartfishingapp.api.PostManager;
+import com.vma.smartfishingapp.database.table.DirectionDB;
 import com.vma.smartfishingapp.dom.DpiHolder;
 import com.vma.smartfishingapp.dom.VmaApiConstant;
+import com.vma.smartfishingapp.dom.VmaConstants;
 import com.vma.smartfishingapp.libs.Utility;
 import com.vma.smartfishingapp.libs.VmaPreferences;
+import com.vma.smartfishingapp.ui.component.option.OptionDialog;
+import com.vma.smartfishingapp.ui.maps.LocationHolder;
 import com.vma.smartfishingapp.ui.maps.MainMapActivity;
 import com.vma.smartfishingapp.ui.master.MyActivity;
 
@@ -80,10 +84,10 @@ public class DpiActivity extends MyActivity {
     @Override
     protected void initListener() {
         adapter.setOnSelectedListener(menu -> {
-            Intent intent = new Intent(mActivity, MainMapActivity.class);
-            intent.putExtra("longitude", menu.getLongitude());
-            intent.putExtra("latitude", menu.getLatitude());
-            startActivity(intent);
+            LocationHolder holder = new LocationHolder();
+            holder.setLongitude(menu.getLongitude());
+            holder.setLatitude(menu.getLatitude());
+            direct(holder);
         });
     }
 
@@ -109,5 +113,43 @@ public class DpiActivity extends MyActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    private void direct(LocationHolder holder){
+        DirectionDB db = new DirectionDB();
+        if (db.getAll(mActivity).size() >= 1){
+            directionOption(holder.getLongitude(), holder.getLatitude());
+            return;
+        }
+        db.id = db.getNextID(mActivity);
+        db.longitude = holder.getLongitude();
+        db.latitude = holder.getLatitude();
+        db.isFinish = false;
+        db.insert(mActivity);
+        notifyDirection();
+    }
+
+    private void directionOption(double lng, double lat){
+        OptionDialog dialog = new OptionDialog(mActivity);
+        dialog.show();
+        dialog.addChooser(getResources().getString(R.string.move_location));
+        dialog.addChooser(getResources().getString(R.string.add_location));
+        dialog.setOnSelectListener((bundle, value) -> {
+            DirectionDB db = new DirectionDB();
+            if (value.equals(getResources().getString(R.string.move_location))){
+                db.clearData(mActivity);
+            }
+            db.id = db.getNextID(mActivity);
+            db.longitude = lng;
+            db.latitude = lat;
+            db.isFinish = false;
+            db.insert(mActivity);
+            notifyDirection();
+        });
+    }
+
+    private void notifyDirection(){
+        mActivity.sendBroadcast(new Intent(VmaConstants.NOTIFY_DIRECTION));
+        mActivity.startActivity(new Intent(mActivity, MainMapActivity.class));
     }
 }

@@ -68,6 +68,9 @@ public class LogbookUploadDB extends MasterDB {
     public void delete(Context context, int id) {
         super.delete(context, ID +"= "+id+"");
     }
+    public void deleteByLogbook(Context context, int logbook) {
+        super.delete(context, LOGBOOK +"= "+logbook+"");
+    }
     public void delete(Context context) {
         super.delete(context, ID +"= "+ logboook +"");
     }
