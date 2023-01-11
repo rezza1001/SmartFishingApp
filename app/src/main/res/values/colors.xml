@@ -33,4 +33,6 @@
     <color name="weatherActivity">#E5F0F6</color>
     <color name="option_button">#E7F0FF</color>
     <color name="line">#d4d4d4</color>
+
+    <color name="navigation">#AFAFAF</color>
 </resources>

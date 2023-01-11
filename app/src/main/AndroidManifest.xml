@@ -5,9 +5,12 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <uses-permission-sdk-23 android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission-sdk-23 android:name="android.permission.ACCESS_FINE_LOCATION" tools:remove="android:maxSdkVersion" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
@@ -22,6 +25,7 @@
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+
 
     <uses-feature
         android:glEsVersion="0x00020000"
@@ -67,14 +71,18 @@
         <activity android:name=".ui.logbook.AddLogbookActivity" android:screenOrientation="nosensor"/>
         <activity android:name=".ui.logbook.FindFishActivity" android:screenOrientation="nosensor"/>
         <activity android:name=".ui.location.LocationActivity" android:screenOrientation="nosensor"/>
-        <activity android:name=".ui.setting.MainSettingActivity" android:screenOrientation="nosensor"/>
+        <activity android:name=".ui.setting.SettingActivity" android:screenOrientation="nosensor"/>
+        <activity android:name=".ui.setting.BrightnessActivity" android:screenOrientation="nosensor"/>
+        <activity android:name=".ui.setting.DisplayActivity" android:screenOrientation="nosensor"/>
+        <activity android:name=".ui.profile.ProfileActivity" android:screenOrientation="nosensor"/>
+        <activity android:name=".ui.profile.ImageUpdateActivity" android:screenOrientation="nosensor"/>
 
         <service android:name=".service.TimerService" />
         <service android:name=".service.TrackRecordService" />
         <service android:name=".service.AuthService" />
         <service android:name=".service.MainService"  />
         <service android:name=".service.LogbookService"  />
-<!--        <service android:name=".service.GpsService"  />-->
+        <service android:name=".service.GpsService"  />
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"

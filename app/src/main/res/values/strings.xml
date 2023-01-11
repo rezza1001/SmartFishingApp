@@ -141,4 +141,14 @@
     <string name="fish_type">Jenis Ikan</string>
     <string name="unit">Satuan</string>
     <string name="quantity">Jumlah</string>
+    <string name="xb0" translatable="false">°</string>
+    <string name="symbol_minutes" translatable="false">\'\'</string>
+    <string name="symbol_seconds" translatable="false">\'</string>
+    <string name="distance_unit">Satuan Jarak</string>
+    <string name="speed_unit">Satuan Kecepatan</string>
+    <string name="profile">Profile</string>
+    <string name="account">Akun</string>
+    <string name="take_photo">Ambil Foto</string>
+    <string name="choose_image">Pilih Gambar</string>
+    <string name="backround_access_info">Smartfishing membutuhkan akses lokasi sepanjang waktu.</string>
 </resources>

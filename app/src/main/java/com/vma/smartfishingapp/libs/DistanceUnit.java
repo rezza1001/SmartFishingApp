@@ -1,5 +1,6 @@
 package com.vma.smartfishingapp.libs;
 
+import android.content.Context;
 import android.location.Location;
 import android.util.Log;
 
@@ -14,11 +15,14 @@ public class DistanceUnit {
     private double mDistance = 0;
     private String unit = "Nm";
 
-    public DistanceUnit (double distanceKm){
+    public DistanceUnit (Context context, double distanceKm){
+        unit = VmaGlobalConfig.getDistanceUnit(context);
         mDistance = distanceKm;
     }
 
-    public DistanceUnit(){}
+    public DistanceUnit(Context context){
+        unit = VmaGlobalConfig.getDistanceUnit(context);
+    }
 
 
     public double getDistance(){

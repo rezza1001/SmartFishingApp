@@ -46,13 +46,13 @@ public class DpiAdapter extends RecyclerView.Adapter<DpiAdapter.AdapterView>{
         String no = position + 1 +".";
         holder.txvw_no.setText(no);
         holder.txvw_title.setText(Utility.getDateString(data.getDate(),"dd-MM-yyyy"));
-        LocationConverter converter = new LocationConverter(data.getLongitude(), data.getLatitude());
+        LocationConverter converter = new LocationConverter(mContext,data.getLongitude(), data.getLatitude());
         String location = converter.getLatitude() +" | "+ converter.getLongitude();
         holder.txvw_location.setText(location);
         String heading = mContext.getResources().getString(R.string.heading)+" : "+ converter.getBearingStr(mContext);
         holder.txvw_course.setText(heading);
 
-        DistanceUnit distanceUnit = new DistanceUnit(data.getDistance());
+        DistanceUnit distanceUnit = new DistanceUnit(mContext,data.getDistance());
         holder.txvw_distance.setText(distanceUnit.getDisplay());
         holder.txvw_distance.setBackground(Utility.getRectBackground("FFED05", Utility.dpToPx(mContext,12)));
 

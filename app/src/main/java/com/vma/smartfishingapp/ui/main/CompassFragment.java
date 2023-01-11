@@ -8,7 +8,6 @@ import android.content.IntentFilter;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
@@ -20,6 +19,7 @@ import com.vma.smartfishingapp.VmaApplication;
 import com.vma.smartfishingapp.dom.VmaApiConstant;
 import com.vma.smartfishingapp.dom.VmaConstants;
 import com.vma.smartfishingapp.libs.Compass;
+import com.vma.smartfishingapp.libs.SpeedUnit;
 import com.vma.smartfishingapp.ui.master.MyFragment;
 
 import org.json.JSONException;
@@ -33,7 +33,7 @@ import java.util.Locale;
 public class CompassFragment extends MyFragment {
 
     private ImageView imvw_compass;
-    private TextView txvw_knotValue,txvw_courseValue,txvw_courseInfo2,txvw_courseInfo1;
+    private TextView txvw_knotValue,txvw_courseValue,txvw_courseInfo2,txvw_courseInfo1,txvw_knotTitle;
     private Compass mCompass;
 
     public static CompassFragment newInstance() {
@@ -55,6 +55,7 @@ public class CompassFragment extends MyFragment {
         txvw_courseValue = view.findViewById(R.id.txvw_courseValue);
         txvw_courseInfo2 = view.findViewById(R.id.txvw_courseInfo2);
         txvw_courseInfo1 = view.findViewById(R.id.txvw_courseInfo1);
+        txvw_knotTitle = view.findViewById(R.id.txvw_knotTitle);
 
         mCompass = new Compass();
         mCompass.create(mActivity);
@@ -97,6 +98,8 @@ public class CompassFragment extends MyFragment {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(VmaConstants.VMA_GPS);
         mActivity.registerReceiver(receiver, intentFilter);
+
+
     }
 
     @SuppressLint("SetTextI18n")
@@ -104,7 +107,9 @@ public class CompassFragment extends MyFragment {
         try {
             JSONObject jo = new JSONObject(data);
             int speed = jo.getInt(VmaApiConstant.GPS_ITEM_SPEED);
-            txvw_knotValue.setText(speed+"");
+            SpeedUnit speedUnit = new SpeedUnit(mActivity,speed);
+            txvw_knotTitle.setText(speedUnit.getUnitSpeed());
+            txvw_knotValue.setText(speedUnit.getSpeed()+"");
 
             Location temp = new Location(LocationManager.GPS_PROVIDER);
             temp.setLatitude(jo.getLong(VmaApiConstant.GPS_ITEM_LAT));

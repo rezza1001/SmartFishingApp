@@ -61,7 +61,7 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.AdapterView>
         String timeValue = mContext.getResources().getString(R.string.time)+" : "+ totalTime;
         holder.txvw_time.setText(timeValue);
 
-        DistanceUnit distanceUnit = new DistanceUnit();
+        DistanceUnit distanceUnit = new DistanceUnit(mContext);
         distanceUnit.calcDistance(data.getPointStart(),data.getPointEnd());
         data.setDistance((float) distanceUnit.getNm());
 

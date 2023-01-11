@@ -73,10 +73,10 @@ public class LocationInfoDialog extends MyDialog {
         double lat = distancePoint.getY();
         double lng = distancePoint.getX();
 
-        LocationConverter converter = new LocationConverter(lng, lat);
-        txvw_location.setText(converter.getLongitudeDisplay(mActivity) +" "+converter.getLatitudeDisplay(mActivity));
+        LocationConverter converter = new LocationConverter(mActivity, lng, lat);
+        txvw_location.setText(converter.getLongitudeDisplay() +" "+converter.getLatitudeDisplay(mActivity));
         Point currentPoint = new Point(currentLng, currentLat, SpatialReferences.getWgs84());
-        DistanceUnit unit = new DistanceUnit();
+        DistanceUnit unit = new DistanceUnit(mActivity);
         unit.calcDistance(distancePoint, currentPoint);
         txvw_distance.setText(unit.getDisplay());
 

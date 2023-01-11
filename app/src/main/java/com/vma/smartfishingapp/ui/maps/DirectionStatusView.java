@@ -147,11 +147,11 @@ public class DirectionStatusView extends MyView {
             return;
         }
 
-        LocationConverter converter = new LocationConverter(db.longitude,db.latitude);
+        LocationConverter converter = new LocationConverter(mActivity, db.longitude,db.latitude);
         mPoint = converter.getPoint();
 
         String strLat = converter.getLatitudeDisplay(mActivity);
-        String strLon = converter.getLongitudeDisplay(mActivity);
+        String strLon = converter.getLongitudeDisplay();
         String strPos = String.format(Locale.ENGLISH, "%s\n%s", strLat, strLon );
         txvw_dirTo.setText(strPos);
 
@@ -188,13 +188,13 @@ public class DirectionStatusView extends MyView {
         }
 
         for (DirectionDB valDB : listDirection){
-            LocationConverter locDestConverter = new LocationConverter(valDB.longitude,valDB.latitude);
+            LocationConverter locDestConverter = new LocationConverter(mActivity,valDB.longitude,valDB.latitude);
             if (!valDB.isFinish){
                 mPoint = locDestConverter.getPoint();
                 break;
             }
         }
-        DistanceUnit distanceUnit = new DistanceUnit();
+        DistanceUnit distanceUnit = new DistanceUnit(mActivity);
         distanceUnit.calcDistance(converter.getPoint(),getPoint());
         double distance = distanceUnit.getDistance();
 
@@ -221,7 +221,7 @@ public class DirectionStatusView extends MyView {
         graphicList.clear();
 
         for (DirectionDB holder : listDirection) {
-            LocationConverter locDestConverter = new LocationConverter(holder.longitude,holder.latitude);
+            LocationConverter locDestConverter = new LocationConverter(mActivity, holder.longitude,holder.latitude);
             Graphic destGraphic = new Graphic(locDestConverter.getPoint(), mSymbolTargetPos);
             if (holder.isFinish){
                 destGraphic = new Graphic(locDestConverter.getPoint(), mFinishSymbol);
@@ -252,7 +252,7 @@ public class DirectionStatusView extends MyView {
 
         for (DirectionDB directionHolder : listDirection){
             if (!directionHolder.isFinish){
-                LocationConverter locDestConverter = new LocationConverter(directionHolder.longitude,directionHolder.latitude);
+                LocationConverter locDestConverter = new LocationConverter(mActivity, directionHolder.longitude,directionHolder.latitude);
                 pointCollection.add(locDestConverter.getPoint());
             }
         }
@@ -268,7 +268,7 @@ public class DirectionStatusView extends MyView {
         int mID = 0;
         for (DirectionDB directionHolder : listDirection){
             if (!directionHolder.isFinish){
-                LocationConverter locDestConverter = new LocationConverter(directionHolder.longitude,directionHolder.latitude);
+                LocationConverter locDestConverter = new LocationConverter(mActivity, directionHolder.longitude,directionHolder.latitude);
                 destPoint = locDestConverter.getPoint();
                 mID = directionHolder.id;
                 break;
@@ -277,7 +277,7 @@ public class DirectionStatusView extends MyView {
                 index ++;
             }
         }
-        DistanceUnit distanceUnit = new DistanceUnit();
+        DistanceUnit distanceUnit = new DistanceUnit(mActivity);
         distanceUnit.calcDistance(destPoint, mCurrPoint);
         double distanceMetre = distanceUnit.getNm() * 1852;
         if (distanceMetre <= 50 && listDirection.size() > 0){

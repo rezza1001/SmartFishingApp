@@ -250,7 +250,8 @@ public class Utility {
     public static boolean hasPermission(Activity activity, String[] permissions){
         Utility.logDbug("Utility"," hasPermissions with request "+permissions.length);
         if(!hasPermissions(activity, permissions)){
-            ActivityCompat.requestPermissions(Objects.requireNonNull(activity), permissions, 32);
+            Utility.logDbug("Utility","ActivityCompat.requestPermissions"+permissions.length);
+            ActivityCompat.requestPermissions(Objects.requireNonNull(activity), permissions, PackageManager.PERMISSION_GRANTED);
             return false;
         }
         else {

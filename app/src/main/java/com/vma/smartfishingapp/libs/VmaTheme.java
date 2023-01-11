@@ -9,6 +9,8 @@ import androidx.appcompat.app.AppCompatDelegate;
 
 import com.vma.smartfishingapp.R;
 
+import java.util.Calendar;
+
 public class VmaTheme {
 
     public static final String CHANGE_THEME = "ChangeTheme";
@@ -46,8 +48,11 @@ public class VmaTheme {
         if (mode == DAY_MODE){
             setLightMode(context);
         }
-        else {
+        else if (mode == NIGHT_MODE){
             setDarkMode(context);
+        }
+        else {
+            setAutoMode(context);
         }
     }
 
@@ -70,6 +75,18 @@ public class VmaTheme {
     }
     public static void setAutoMode(Context context){
         VmaPreferences.save(context, VMA_THEME, AUTO_MODE);
+        int mode = VmaPreferences.getInt(context, VMA_THEME);
+        if (mode == AUTO_MODE ){
+            Calendar calendar = Calendar.getInstance();
+            if (calendar.get(Calendar.HOUR_OF_DAY) >= 6 && calendar.get(Calendar.HOUR_OF_DAY) < 18){
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            }
+            else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            }
+            new Handler().postDelayed(() -> context.sendBroadcast(new Intent(CHANGE_THEME)),500);
+        }
+
     }
 
     public static String getThemeName(Context context){

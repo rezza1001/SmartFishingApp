@@ -102,7 +102,7 @@ public class TrackRecordService extends Service {
             if (jo.has(VmaApiConstant.GPS_ITEM_SNR)){
                 return;
             }
-            LocationConverter converter = new LocationConverter(jo.getString("longitude"),jo.getString("latitude"));
+            LocationConverter converter = new LocationConverter(this, jo.getString("longitude"),jo.getString("latitude"));
             latitude = converter.getLatitude();
             longitude = converter.getLongitude();
 
@@ -116,7 +116,7 @@ public class TrackRecordService extends Service {
                     Point point1 = new Point(lastLongitude, lastLatitude, SpatialReferences.getWgs84());
                     Point point2 = new Point(longitude, latitude, SpatialReferences.getWgs84());
 
-                    DistanceUnit unit = new DistanceUnit();
+                    DistanceUnit unit = new DistanceUnit(getApplicationContext());
                     unit.calcDistance(point1, point2);
                     double distanceMetre = unit.getNm() * 1852;
                     if (distanceMetre < 20){

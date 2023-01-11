@@ -14,9 +14,8 @@ import com.vma.smartfishingapp.ui.dpi.DpiActivity;
 import com.vma.smartfishingapp.ui.location.LocationActivity;
 import com.vma.smartfishingapp.ui.logbook.LogbookActivity;
 import com.vma.smartfishingapp.ui.maps.MainMapActivity;
-import com.vma.smartfishingapp.ui.setting.MainSettingActivity;
+import com.vma.smartfishingapp.ui.setting.SettingActivity;
 import com.vma.smartfishingapp.ui.weather.WeatherActivity;
-import com.vma.smartfishingapp.ui.main.MenuAdapter;
 import com.vma.smartfishingapp.dom.MenuHolder;
 import com.vma.smartfishingapp.libs.Utility;
 import com.vma.smartfishingapp.ui.master.MyView;
@@ -139,7 +138,7 @@ public class MenuView extends MyView {
 //        }
         else if (holder.menu == MenuHolder.MENU.SETTING){
 //            Intent launchIntent = mActivity.getPackageManager().getLaunchIntentForPackage(settingPackage);
-            Intent intent = new Intent(mActivity, MainSettingActivity.class);
+            Intent intent = new Intent(mActivity, SettingActivity.class);
             mActivity.startActivity( intent );
         }
         else {

@@ -14,65 +14,9 @@ import java.nio.charset.StandardCharsets;
 
 //  VMA Configuration
 public class VmaPreferences {
-    public final String LOGLEVEL = "llevel";
-    public final String LOGTO = "logto";
-    public final String LOGMSG = "lmsg";
-    public final String DELDB = "deldb";
-    public final String FACTORYSET = "factory";
-    public final String ZONE_INFO = "zoneinfo";
 
-    public int logto;
-    public int logmsg;
-    public int  deleteDB;               //  Delete Database(Warning!!!)
-    public int factoySet;
-
-    //  From config File
-    private final String ASSETS_GPSPORT     = "gpsport";
-    private final String ASSETS_RADIOPORT   = "radioport";
-    private final String ASSETS_TIMEZONE    = "timezone";
-    private final String ASSETS_RADIOVER    = "radiover";
-    private final String ASSETS_MAPVER      = "mapver";
-    private final String ASSETS_HWVER       = "hwver";
-    private final String ASSETS_INTERVAL    = "interval";
-    public String gpsPort;
-    public String radioPort;
-    public int timezone;                //  timezone
-    public int interval;                //  saving interval in gps info
-
-    //  Preferences Config
-    private final String PREF_AUTOBRIGHT = "autobright";
-    private final String PREF_BRIGHT    = "bright";
-    private final String PREF_TEMA      = "daynighttema";
-    private final String PREF_SHOWBAR   = "showbar";
-    private final String PREF_POSFORMAT = "posformat";
-    private final String PREF_SID       = "sid";
-    private final String PREF_SOWNER    = "sowner";
-    private final String PREF_SIPI      = "sipi";
-    private final String PREF_TON       = "grosston";
-    private final String PREF_TOOLS     = "tools";
-    private final String PREF_SHARELOC  = "shareloc";
-    private final String PREF_REGIST    = "regist";
-    private final String PREF_BTNTICK   = "btntick";
-    private final String PREF_ADCTICK   = "adctick";
-    private final String PREF_ADCVER    = "adcver";
-    private final String PREF_UARTTICK  = "uarttick";
-    private final String PREF_ADDEULA   = "eula";
-    private final String PREF_ADDNAVI   = "navi";
-    private final String PREF_ADDICON   = "navicon";
-
-    //  Preferences Config
-    private final String STATUS_RSSI    = "rssi";       //  Radio Signal SSID( -70>5, -77>4, -83>3, -88>2, -101>1, -101<0(1bar toggle)
-    private final String STATUS_RADIO   = "radio";      //  Radio Connect Status(1:Connect, 0:not connect)
-    private final String STATUS_BLE     = "ble";        //  ble status(1:connect, 0:disconnect, 2:paring, 3 Disable)
-    private final String STATUS_PORT    = "port";       //  Port Status( 0:inport, 1:outport)
-    private final String STATUS_GPS     = "gps";        //  (2:fail, 1: valid, 0:Invalid)
-    private final String STATUS_BLEVEL  = "level";      //  battery level(0~100)
-    private final String STATUS_BINDEX  = "index";      //  battery level index(0~5) 0: <20, 1:<40, 2:<60, 3:<80, 4: <=100 5:not used(charging)
-    private final String STATUS_DAYNIGHT= "daynight";   //  0:day, 1:night
-    private final String STATUS_DATE    = "date";
-    private final String STATUS_TIME    = "time";
-
-
+    public static final String BRIGHTNESS = "BRIGHTNESS";
+    public static final String BRIGHTNESS_MODE = "BRIGHTNESS_MODE";
 
 
 

@@ -100,7 +100,7 @@ public class CenterPointView extends MyView {
             if (jo.has(VmaApiConstant.GPS_ITEM_SNR)){
                 return;
             }
-            LocationConverter converter = new LocationConverter(jo.getString("longitude"),jo.getString("latitude"));
+            LocationConverter converter = new LocationConverter(mActivity, jo.getString("longitude"),jo.getString("latitude"));
 
             LocationInfoDialog dialog = new LocationInfoDialog(mActivity);
             dialog.show();

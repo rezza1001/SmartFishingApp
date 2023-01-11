@@ -9,7 +9,6 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -43,6 +42,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -51,7 +51,7 @@ public class MainService extends Service {
     private static final String TAG = "MainService";
 
     public static Location lastLocation = null;
-    public static boolean permission = false;
+    public static boolean permission = true;
     public static  ArrayList<Bundle> listDummy = new ArrayList<>();
 
     private Timer timer;
@@ -72,12 +72,9 @@ public class MainService extends Service {
     public void onCreate() {
         startNotificationListener();
         super.onCreate();
-
+        Log.d(TAG, "onCreate");
 //        loadDummy();
 
-        if (permission) {
-            startGPSRequestLocation();
-        }
         sender();
         loadFish();
     }
@@ -96,43 +93,32 @@ public class MainService extends Service {
         Log.d(TAG, "Stopped");
     }
 
-    public void startGPSRequestLocation() {
-        LocationManager mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
+    public void checkGPSLocation() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return ;
         }
-        mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, location -> {
-            if (listDummy.size() > 0){
-                if (indexDummy < listDummy.size()){
-                    Bundle dummy = listDummy.get(indexDummy);
-                    Location temp = new Location(LocationManager.GPS_PROVIDER);
-                    temp.setLatitude(dummy.getDouble(VmaApiConstant.GPS_ITEM_LAT));
-                    temp.setLongitude(dummy.getDouble(VmaApiConstant.GPS_ITEM_LON));
-                    location = temp;
-                }
-                else {
-                    indexDummy = 0;
-                }
-                indexDummy ++;
+        LocationManager  mlocManager = (LocationManager)getApplicationContext().getSystemService(LOCATION_SERVICE);
+        List<String> providers = mlocManager.getProviders(true);
+        Location bestLocation = null;
+        Log.d("GPS_SERVICE","providers "+providers.size());
+        for (String provider : providers) {
+            Location l = mlocManager.getLastKnownLocation(provider);
+            if (l == null) {
+                continue;
             }
-            sendLocationUpdate(location,true);
-        });
+            if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
+                bestLocation = l;
+            }
+        }
 
-//        LocationService  locationService = new LocationService(getApplicationContext());
-//        locationService.create();
-//        locationService.setOnLocationChangeListener(new LocationService.OnLocationChangeListener() {
-//            @Override
-//            public void onChange(Location lastLocation, List<Location> locations) {
-//                sendLocationUpdate(lastLocation, true);
-//            }
-//
-//            @Override
-//            public void onChangeStatus(boolean available) {
-//                sendLocationUpdate(lastLocation, available);
-//            }
-//        });
+        if (bestLocation != null){
+            sendLocationUpdate(bestLocation,true);
+        }
+        else {
+            Log.e(TAG,"DATA GPS FAILED");
+        }
+
     }
 
 
@@ -179,6 +165,15 @@ public class MainService extends Service {
             e.printStackTrace();
         }
         VmaPreferences.save(getApplicationContext(),VmaApiConstant.GPS_LSAT_DATA, jo.toString()); // SAVE LAST LOCATION
+
+        if (lastLocationStr.isEmpty()){
+            Log.d(TAG,"sendBroadcast is empty");
+            return;
+        }
+        Intent intent = new Intent(VmaConstants.VMA_GPS);
+        intent.putExtra(VmaConstants.SERVICE_DATA, lastLocationStr);
+        sendBroadcast(intent);
+        Log.d(TAG,"sendBroadcast "+lastLocationStr);
     }
 
     private void sender(){
@@ -186,14 +181,11 @@ public class MainService extends Service {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                if (lastLocationStr.isEmpty()){
-                    Log.d(TAG,"sendBroadcast is empty");
-                    return;
+
+                if (permission) {
+                    checkGPSLocation();
                 }
-                Intent intent = new Intent(VmaConstants.VMA_GPS);
-                intent.putExtra(VmaConstants.SERVICE_DATA, lastLocationStr);
-                sendBroadcast(intent);
-                Log.d(TAG,"sendBroadcast "+lastLocationStr);
+
             }
         },0,1000);
     }

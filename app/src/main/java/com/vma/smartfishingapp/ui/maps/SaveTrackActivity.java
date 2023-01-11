@@ -182,7 +182,7 @@ public class SaveTrackActivity extends MyActivity {
                 try {
                     JSONObject jo = new JSONObject(data);
                     listSpeed.add(jo.getInt("speed"));
-                    LocationConverter converter = new LocationConverter(jo.getString("longitude"),jo.getString("latitude"));
+                    LocationConverter converter = new LocationConverter(mActivity,jo.getString("longitude"),jo.getString("latitude"));
                     recordPosition.add(converter.getPoint());
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -267,7 +267,7 @@ public class SaveTrackActivity extends MyActivity {
                 new Handler().postDelayed(() -> {
                     try {
                         JSONObject   jo = new JSONObject(mStartPosition);
-                        LocationConverter converter = new LocationConverter(jo.getString("longitude"),jo.getString("latitude"));
+                        LocationConverter converter = new LocationConverter(mActivity,jo.getString("longitude"),jo.getString("latitude"));
                         setZoom();
                         mapvw_arcgis.setViewpointCenterAsync(converter.getPoint());
                     } catch (JSONException e) {
@@ -293,13 +293,13 @@ public class SaveTrackActivity extends MyActivity {
 
         try {
             JSONObject joStart = new JSONObject(mStartPosition);
-            LocationConverter convStart = new LocationConverter(joStart.getString("longitude"),joStart.getString("latitude"));
+            LocationConverter convStart = new LocationConverter(mActivity, joStart.getString("longitude"),joStart.getString("latitude"));
 
             Graphic startGraphic = new Graphic(convStart.getPoint(), getWayPointMarker(R.drawable.track_start));
             graphicsOverlayTrackMarker.getGraphics().add(startGraphic);
 
             JSONObject joEnd = new JSONObject(mEndPosition);
-            LocationConverter convEnd = new LocationConverter(joEnd.getString("longitude"),joEnd.getString("latitude"));
+            LocationConverter convEnd = new LocationConverter(mActivity, joEnd.getString("longitude"),joEnd.getString("latitude"));
             Graphic endGraphic = new Graphic(convEnd.getPoint(), getWayPointMarker(R.drawable.track_end));
             graphicsOverlayTrackMarker.getGraphics().add(endGraphic);
 

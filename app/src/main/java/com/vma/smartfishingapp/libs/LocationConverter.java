@@ -9,7 +9,6 @@ import com.esri.arcgisruntime.geometry.SpatialReference;
 import com.esri.arcgisruntime.geometry.SpatialReferences;
 import com.vma.smartfishingapp.dom.VmaApiConstant;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.math.RoundingMode;
@@ -26,14 +25,17 @@ public class LocationConverter {
 
     String mLongitude;
     String mLatitude;
+    int format = Location.FORMAT_DEGREES;
 
-    public LocationConverter(String longitude, String latitude){
+    public LocationConverter(Context context, String longitude, String latitude){
         mLongitude = longitude;
         mLatitude = latitude;
+        format = VmaGlobalConfig.getCoordinateFormat(context);
     }
-    public LocationConverter(double longitude, double latitude){
+    public LocationConverter(Context context, double longitude, double latitude){
         mLongitude = longitude+"";
         mLatitude = latitude+"";
+        format = VmaGlobalConfig.getCoordinateFormat(context);
     }
 
     public String getDisplayDegree(Type type){
@@ -85,8 +87,8 @@ public class LocationConverter {
         return Double.parseDouble(mLatitude);
     }
 
-    public String getLongitudeDisplay(Context context){
-        int format = VmaGlobalConfig.getCoordinateFormat(context);
+    public String getLongitudeDisplay(){
+
         Log.d(TAG,"getLongitudeDisplay format "+format);
         if (format == VmaGlobalConfig.FORMAT_COORDINATE_DEGREE){
             return getDisplayDegree(Type.LONGITUDE);
@@ -99,7 +101,6 @@ public class LocationConverter {
     }
 
     public String getLatitudeDisplay(Context context){
-        int format = VmaGlobalConfig.getCoordinateFormat(context);
         Log.d(TAG,"getLatitudeDisplay format "+format);
         if (format == VmaGlobalConfig.FORMAT_COORDINATE_DEGREE){
             return getDisplayDegree(Type.LATITUDE);
@@ -109,6 +110,25 @@ public class LocationConverter {
         }
         else
             return getDisplaySecond(Type.LATITUDE);
+    }
+
+    public String getUnitLon(){
+        double longitude = Double.parseDouble(mLongitude);
+        if (longitude < 0){
+            return "W";
+        }
+        else {
+            return "E";
+        }
+    }
+    public String getUnitLat(){
+        double latitude = Double.parseDouble(mLatitude);
+        if (latitude < 0){
+            return "S";
+        }
+        else {
+            return "N";
+        }
     }
 
     public double getBearing(Context context){

@@ -15,4 +15,9 @@
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowNoTitle">true</item>
     </style>
+
+    <style name="SwitchCompatStyle" >
+        <item name="thumbTint">@color/switch_selector</item>
+        <item name="trackTint">@color/switch_selector</item>
+    </style>
 </resources>

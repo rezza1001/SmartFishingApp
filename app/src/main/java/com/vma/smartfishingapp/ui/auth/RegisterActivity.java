@@ -21,6 +21,7 @@ import com.vma.smartfishingapp.R;
 import com.vma.smartfishingapp.api.ApiConfig;
 import com.vma.smartfishingapp.api.FormPost;
 import com.vma.smartfishingapp.api.PostManager;
+import com.vma.smartfishingapp.libs.MyDevice;
 import com.vma.smartfishingapp.ui.component.EditTextForm;
 import com.vma.smartfishingapp.ui.component.OptionChooserImageDialog;
 import com.vma.smartfishingapp.ui.component.VmaButton;
@@ -49,6 +50,8 @@ public class RegisterActivity extends MyActivity {
 
     ArrayList<Bundle> listPort = new ArrayList<>();
     ArrayList<Bundle> listInstitution = new ArrayList<>();
+
+    MyDevice myDevice;
 
     @Override
     protected int setLayout() {
@@ -116,6 +119,8 @@ public class RegisterActivity extends MyActivity {
 
     @Override
     protected void initData() {
+        myDevice = new MyDevice(mActivity);
+
         FileProcessing.clearImage(mActivity,"/"+FileProcessing.ROOT+"/"+FileProcessing.TEMP);
         loadPort();
     }
@@ -259,6 +264,8 @@ public class RegisterActivity extends MyActivity {
         post.addParam("shipName", edtx_shipName.getValue());
         post.addParam("sipi", edtx_sipi.getValue());
         post.addParam("gt", edtx_gt.getValue());
+        post.addParam("deviceId", myDevice.getDeviceID());
+        post.addParam("deviceName", myDevice.getDeviceName());
         int port = Integer.parseInt(edtx_port.getKey());
         post.addParam("port", port);
 
@@ -305,13 +312,18 @@ public class RegisterActivity extends MyActivity {
         PostManager post = new PostManager(mActivity, ApiConfig.LOGIN);
         post.addParam("userName", username);
         post.addParam("password", password);
+        post.addParam("deviceId", myDevice.getDeviceID());
+        post.addParam("deviceName", myDevice.getDeviceName());
         post.exPost();
         post.setOnReceiveListener((obj, code, success, message) -> {
             if (success){
                 insertToDB(obj);
             }
             else {
-                Utility.showToastError(mActivity,"Login Failed !");
+                if (message.isEmpty()){
+                    message = "Login Failed !";
+                }
+                Utility.showToastError(mActivity,message);
             }
         });
     }

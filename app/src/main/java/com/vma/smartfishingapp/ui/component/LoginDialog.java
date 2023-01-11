@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 
 import com.vma.smartfishingapp.R;
+import com.vma.smartfishingapp.libs.MyDevice;
 import com.vma.smartfishingapp.ui.component.VmaButton;
 import com.vma.smartfishingapp.api.ApiConfig;
 import com.vma.smartfishingapp.api.PostManager;
@@ -25,6 +26,7 @@ public class LoginDialog extends MyDialog {
     VmaButton bbtn_login,bbtn_cancel;
 
     EditText edtx_username,edtx_password;
+    MyDevice myDevice;
 
     public LoginDialog(@NonNull Context context) {
         super(context);
@@ -63,6 +65,7 @@ public class LoginDialog extends MyDialog {
     @Override
     public void show() {
         super.show();
+        myDevice = new MyDevice(mActivity);
 
         card_body.setVisibility(View.VISIBLE);
         card_body.startAnimation(AnimationUtils.loadAnimation(mActivity, R.anim.zoom_in));
@@ -92,13 +95,18 @@ public class LoginDialog extends MyDialog {
         PostManager post = new PostManager(mActivity, ApiConfig.LOGIN);
         post.addParam("userName", username);
         post.addParam("password", password);
+        post.addParam("deviceId", myDevice.getDeviceID());
+        post.addParam("deviceName", myDevice.getDeviceName());
         post.exPost();
         post.setOnReceiveListener((obj, code, success, message) -> {
             if (success){
                 insertToDB(obj);
             }
             else {
-                Utility.showToastError(mActivity,"Login Failed !");
+                if (message.isEmpty()){
+                    message = "Login Failed !";
+                }
+                Utility.showToastError(mActivity,message);
             }
         });
     }
@@ -115,6 +123,7 @@ public class LoginDialog extends MyDialog {
             db.shipName = data.getString("ship_name");
             db.owner = data.getJSONObject("owner").getString("name");
             db.phone = data.getJSONObject("owner").getString("phone");
+            db.address = data.getJSONObject("owner").getString("address");
             db.sipi = data.getString("sipi");
             db.gt = data.getString("gt");
             db.image = data.getString("image");

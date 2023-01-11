@@ -76,11 +76,11 @@ public class ListTrackFragment extends MyFragment {
             holder.setPath(trackDB.filePath);
             try {
                 JSONObject joStart = new JSONObject(trackDB.startPosition);
-                LocationConverter convStart = new LocationConverter(joStart.getString("longitude"),joStart.getString("latitude"));
+                LocationConverter convStart = new LocationConverter(mActivity,joStart.getString("longitude"),joStart.getString("latitude"));
                 holder.setPointStart(convStart.getPoint());
 
                 JSONObject joEnd = new JSONObject(trackDB.endPosition);
-                LocationConverter convEnd = new LocationConverter(joEnd.getString("longitude"),joEnd.getString("latitude"));
+                LocationConverter convEnd = new LocationConverter(mActivity, joEnd.getString("longitude"),joEnd.getString("latitude"));
                 holder.setPointEnd(convEnd.getPoint());
 
                 holder.setStartDate(Utility.getDate(trackDB.startTime,"dd-MM-yyyy HH:mm:ss"));

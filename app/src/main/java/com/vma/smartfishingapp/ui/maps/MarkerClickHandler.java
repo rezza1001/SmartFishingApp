@@ -1,5 +1,6 @@
 package com.vma.smartfishingapp.ui.maps;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.esri.arcgisruntime.geometry.GeometryType;
@@ -10,7 +11,7 @@ import com.vma.smartfishingapp.libs.DistanceUnit;
 
 public class MarkerClickHandler {
 
-    public MarkerClickHandler(ListenableList<Graphic> graphicList, Point tapPoint, int mSelectScale, OnActionListener onActionListener){
+    public MarkerClickHandler(Context context, ListenableList<Graphic> graphicList, Point tapPoint, int mSelectScale, OnActionListener onActionListener){
         double pClickSize = 0;
         int position = -1;
         int i = 0;
@@ -20,7 +21,7 @@ public class MarkerClickHandler {
             if (graphic.getGeometry().getGeometryType() == GeometryType.POINT){
                 Point x  = (Point) graphic.getGeometry();
 
-                DistanceUnit distanceUnit = new DistanceUnit();
+                DistanceUnit distanceUnit = new DistanceUnit(context);
                 distanceUnit.calcDistance(x, tapPoint);
                 double distance = distanceUnit.getNm();
                 double distanceMetre = distance * 1852;

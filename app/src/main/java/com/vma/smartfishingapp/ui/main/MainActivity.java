@@ -1,10 +1,12 @@
 package com.vma.smartfishingapp.ui.main;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
@@ -18,6 +20,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -25,6 +28,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.bumptech.glide.Glide;
 import com.vma.smartfishingapp.R;
 import com.vma.smartfishingapp.api.ApiConfig;
+import com.vma.smartfishingapp.libs.Utility;
 import com.vma.smartfishingapp.ui.auth.RegisterActivity;
 import com.vma.smartfishingapp.ui.component.VmaButton;
 import com.vma.smartfishingapp.ui.component.ConfirmDialog;
@@ -72,14 +76,19 @@ public class MainActivity extends MyActivity {
         bbtn_login.create("Login",0);
 
         keepAlive();
-        IntentFilter intentFilter = new IntentFilter(VmaConstants.VMA_TIMER_TASK);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(VmaConstants.VMA_TIMER_TASK);
+        intentFilter.addAction(VmaConstants.NOTIFY_RELOAD);
         registerReceiver(receiver,intentFilter);
     }
 
     @Override
     protected void initData() {
+        checkAlwaysOnLocation();
+
         rvly_profile.clearAnimation();
         bbtn_login.clearAnimation();
+        Log.d("TAGRZ_RE","initData imei "+mAccountDB.imei);
         Glide.with(mActivity).load(R.drawable.default_kapal).into(imvw_kapal);
         if (mAccountDB.imei.isEmpty()){
             rvly_profile.startAnimation(AnimationUtils.loadAnimation(mActivity, R.anim.zoom_out));
@@ -195,6 +204,10 @@ public class MainActivity extends MyActivity {
                     checkGPS();
                 }
             }
+            else if (intent.getAction().equals(VmaConstants.NOTIFY_RELOAD)){
+                reloadAccount();
+                initData();
+            }
         }
     };
 
@@ -210,6 +223,27 @@ public class MainActivity extends MyActivity {
 //
 //        });
     }
+
+    private void checkAlwaysOnLocation(){
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            String[]   permission = new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION};
+            boolean hasPermission = Utility.checkPermission(mActivity,permission);
+            if (!hasPermission ){
+                ConfirmDialog dialog = new ConfirmDialog(mActivity);
+                dialog.show(getResources().getString(R.string.permission),getResources().getString(R.string.backround_access_info));
+                dialog.setOnActionListener(confirm -> {
+                    if (confirm){
+                        mActivity.requestPermissions(permission, 12);
+                    }
+                });
+
+            }
+
+        }
+
+    }
+
+
 
 
 

@@ -35,7 +35,6 @@ import com.esri.arcgisruntime.mapping.view.BackgroundGrid;
 import com.esri.arcgisruntime.mapping.view.DefaultMapViewOnTouchListener;
 import com.esri.arcgisruntime.mapping.view.Graphic;
 import com.esri.arcgisruntime.mapping.view.GraphicsOverlay;
-import com.esri.arcgisruntime.mapping.view.LocationDisplay;
 import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
 import com.esri.arcgisruntime.symbology.SimpleLineSymbol;
@@ -67,7 +66,6 @@ public class MapFragment extends MyFragment {
     RelativeLayout rvly_zoomOut,rvly_zoomIn,rvly_compassAction;
 
     private MobileMapPackage mapPackage;
-    private LocationDisplay mLocationDisplay;
     private CoordinateView covw_coordinate;
     private RecordStatusView rcvw_status;
     private RecordButtonView rcbvw_record;
@@ -258,7 +256,7 @@ public class MapFragment extends MyFragment {
                 public void onLiveRead(String data) {
                     try {
                         JSONObject jo = new JSONObject(data);
-                        LocationConverter converter = new LocationConverter(jo.getString("longitude"),jo.getString("latitude"));
+                        LocationConverter converter = new LocationConverter(mActivity,jo.getString("longitude"),jo.getString("latitude"));
                         recordPosition.add(converter.getPoint());
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -283,7 +281,7 @@ public class MapFragment extends MyFragment {
             JSONObject jo = new JSONObject(prefData);
             Log.d(TAG,"onReceiveMessageFormGps "+ data);
 
-            LocationConverter converter = new LocationConverter(jo.getString("longitude"),jo.getString("latitude"));
+            LocationConverter converter = new LocationConverter(mActivity,jo.getString("longitude"),jo.getString("latitude"));
             myLatitude = converter.getLatitude();
             myLongitude = converter.getLongitude();
             covw_coordinate.setLocation(converter);
@@ -370,7 +368,6 @@ public class MapFragment extends MyFragment {
                 map.setLoadSettings(loadSettings);
                 mapvw_arcgis.setMap(map);
 
-                mLocationDisplay = mapvw_arcgis.getLocationDisplay();
                 //  Load Feature Layers
                 LayerList layerList = map.getOperationalLayers();
 
@@ -507,14 +504,14 @@ public class MapFragment extends MyFragment {
                     JSONObject joStart = new JSONObject(start);
                     double longStart= joStart.getDouble("longitude");
                     double latStart= joStart.getDouble("latitude");
-                    LocationConverter convStart = new LocationConverter(longStart,latStart);
+                    LocationConverter convStart = new LocationConverter(mActivity,longStart,latStart);
                     Graphic startGraphic = new Graphic(convStart.getPoint(), getWayPointMarker(R.drawable.track_start));
                     graphicsOverlayTrackMarker.getGraphics().add(startGraphic);
 
                     JSONObject joEnd = new JSONObject(end);
                     double longEnd= joEnd.getDouble("longitude");
                     double latEnd= joEnd.getDouble("latitude");
-                    LocationConverter convEnd = new LocationConverter(longEnd,latEnd);
+                    LocationConverter convEnd = new LocationConverter(mActivity,longEnd,latEnd);
                     Graphic endGraphic = new Graphic(convEnd.getPoint(), getWayPointMarker(R.drawable.track_end));
                     graphicsOverlayTrackMarker.getGraphics().add(endGraphic);
                 } catch (JSONException e) {
@@ -627,7 +624,7 @@ public class MapFragment extends MyFragment {
             return;
         }
         ListenableList<Graphic> graphicList =  graphicsOverlayTrackMarker.getGraphics();
-        new MarkerClickHandler(graphicList, point, scalePosition, (index, indexPoint) -> {
+        new MarkerClickHandler(mActivity, graphicList, point, scalePosition, (index, indexPoint) -> {
             TrackInfoDialog dialog = new TrackInfoDialog(mActivity);
             dialog.show(showTrack,indexPoint == 0 );
             dialog.setOnActionListener((actionType, lon, lat) -> {

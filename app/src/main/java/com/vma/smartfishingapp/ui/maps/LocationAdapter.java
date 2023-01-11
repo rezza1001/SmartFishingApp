@@ -41,7 +41,7 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Adapte
         String prefData = VmaPreferences.get(context, VmaApiConstant.GPS_LSAT_DATA);
         try {
             JSONObject jo = new JSONObject(prefData);
-            LocationConverter converter = new LocationConverter(jo.getString("longitude"),jo.getString("latitude"));
+            LocationConverter converter = new LocationConverter(mContext, jo.getString("longitude"),jo.getString("latitude"));
             point = converter.getPoint();
         } catch (JSONException e) {
             e.printStackTrace();
@@ -63,7 +63,7 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Adapte
         String no = position + 1 +".";
         holder.txvw_no.setText(no);
         holder.txvw_title.setText(data.getName());
-        LocationConverter converter = new LocationConverter(data.getLongitude(), data.getLatitude());
+        LocationConverter converter = new LocationConverter(mContext,data.getLongitude(), data.getLatitude());
         String location = converter.getLatitude() +" | "+ converter.getLongitude();
         holder.txvw_location.setText(location);
 
@@ -71,7 +71,7 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Adapte
         String bear = mContext.getResources().getString(R.string.heading)+" : "+String.format(Locale.ENGLISH, "%d°", (int)bearing);
         holder.txvw_course.setText(bear);
 
-        DistanceUnit distanceUnit = new DistanceUnit();
+        DistanceUnit distanceUnit = new DistanceUnit(mContext);
         distanceUnit.calcDistance(converter.getPoint(),point);
 
         holder.txvw_distance.setText(distanceUnit.getDisplay());

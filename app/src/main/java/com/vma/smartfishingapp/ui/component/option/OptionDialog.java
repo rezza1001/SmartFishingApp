@@ -75,6 +75,20 @@ public class OptionDialog extends MyDialog {
         listOption.add(bundle);
         adapter.notifyItemInserted(listOption.size());
     }
+    public void addChooser(String key, String value){
+        Bundle bundle = new Bundle();
+        bundle.putString("value", value);
+        bundle.putString("key", key);
+        listOption.add(bundle);
+        adapter.notifyItemInserted(listOption.size());
+    }
+    public void addChooser(int key, String value){
+        Bundle bundle = new Bundle();
+        bundle.putString("value", value);
+        bundle.putInt("key", key);
+        listOption.add(bundle);
+        adapter.notifyItemInserted(listOption.size());
+    }
     public void addChooser( Bundle bundle ){
         listOption.add(bundle);
         adapter.notifyItemInserted(listOption.size());

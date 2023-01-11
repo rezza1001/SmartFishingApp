@@ -14,6 +14,7 @@ import com.vma.smartfishingapp.api.PostManager;
 import com.vma.smartfishingapp.database.table.AccountDB;
 import com.vma.smartfishingapp.database.table.BlackBoxDB;
 import com.vma.smartfishingapp.dom.VmaApiConstant;
+import com.vma.smartfishingapp.libs.FileProcessing;
 import com.vma.smartfishingapp.libs.Utility;
 import com.vma.smartfishingapp.libs.VmaPreferences;
 
@@ -42,8 +43,10 @@ public class AuthService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.d(TAG,"Starting");
+        writeLog("Starting Service XXXXXXXXXXXXXXX");
         accountDB = new AccountDB();
         accountDB.loadData(getApplicationContext());
+        sendLocationData();
         startTimer();
     }
 
@@ -51,6 +54,7 @@ public class AuthService extends Service {
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG,"Stopped");
+        writeLog("Stopped Service XXXXXXXXXXXXXXX");
         timer.cancel();
     }
 
@@ -79,9 +83,11 @@ public class AuthService extends Service {
             course = gpsLast.getDouble(VmaApiConstant.GPS_ITEM_BEARING);
         } catch (JSONException e) {
             e.printStackTrace();
+            writeLog("JSONException: "+e.getMessage());
         }
 
         Log.d(TAG,"SPEED :"+speed+" menit : "+menit);
+        writeLog("Speed "+ speed+" | Menit : "+menit);
 //        if (menit % 5 == 0 && speed >= 10){
 //            Log.d(TAG,"Send in 5 minute ("+speed+") -> "+accountDB.imei +" ("+lat+","+lon+")");
 //            sendToAPI(lon, lat, speed, course);
@@ -128,8 +134,10 @@ public class AuthService extends Service {
     private void sendToAPI(double lon, double lat, double speed, double course){
         if (!isNetworkConnected()){
             Log.e(TAG,"Network Failed");
+            writeLog("Network Failed");
             return;
         }
+
         PostManager post = new PostManager(getApplicationContext(), ApiConfig.POST_SAVE_POSITION);
         post.addParam("imei", accountDB.imei);
         post.addParam("longitude", lon);
@@ -142,6 +150,7 @@ public class AuthService extends Service {
         post.showloading(false);
         post.exPost();
         post.setOnReceiveListener((obj, code, success, message) -> {
+            writeLog("Sending Location "+ success);
             if (success){
                 Log.d(TAG,"sendLocationData Success");
             }
@@ -165,6 +174,11 @@ public class AuthService extends Service {
         db.isUpload = false;
         db.time = Utility.getDateString(new Date(),"yyyy-MM-dd HH:mm:ss");
         db.insert(getApplicationContext());
+    }
+
+    private void writeLog(String tag){
+        tag = Utility.getDateString(new Date(),"yyyy-MM-dd HH:mm:ss") +"  |  "+ tag;
+        FileProcessing.WriteFileToLog(getApplicationContext(),"dbug","AuthService.txt", tag);
     }
 
 }
