@@ -57,12 +57,12 @@ public class CoordinateView extends MyView {
     public void setLocation(String longitude, String latitude){
         LocationConverter locationConverter = new LocationConverter(mActivity, longitude, latitude);
         txvw_longitude.setText(locationConverter.getLongitudeDisplay());
-        txvw_latitude.setText(locationConverter.getLatitudeDisplay(mActivity));
+        txvw_latitude.setText(locationConverter.getLatitudeDisplay());
     }
 
     public void setLocation(LocationConverter location){
         txvw_longitude.setText(location.getLongitudeDisplay());
-        txvw_latitude.setText(location.getLatitudeDisplay(mActivity));
+        txvw_latitude.setText(location.getLatitudeDisplay());
         txvw_lonUnt.setText(location.getUnitLon());
         txvw_latUnt.setText(location.getUnitLat());
     }

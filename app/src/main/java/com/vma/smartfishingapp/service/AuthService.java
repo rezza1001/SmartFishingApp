@@ -3,9 +3,14 @@ package com.vma.smartfishingapp.service;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.ConnectivityManager;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -22,16 +27,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class AuthService extends Service {
 
     private static final String TAG = "AuthService";
-    private Timer timer;
+    Thread thread;
     private AccountDB accountDB;
     private int menit = 0;
+    private boolean start = false;
 
     @Nullable
     @Override
@@ -44,6 +47,7 @@ public class AuthService extends Service {
         super.onCreate();
         Log.d(TAG,"Starting");
         writeLog("Starting Service XXXXXXXXXXXXXXX");
+        start = true;
         accountDB = new AccountDB();
         accountDB.loadData(getApplicationContext());
         sendLocationData();
@@ -55,19 +59,23 @@ public class AuthService extends Service {
         super.onDestroy();
         Log.d(TAG,"Stopped");
         writeLog("Stopped Service XXXXXXXXXXXXXXX");
-        timer.cancel();
     }
 
+
     private void startTimer(){
-        timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                menit ++;
-                sendLocationData();
-            }
-        },0,60000);
+        RunnableImpl runnable = new RunnableImpl();
+        thread = new Thread(runnable,"AUTH");
+
+        thread.start();
     }
+
+    Handler mHandler = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(Message message) {
+//            Toast.makeText(getApplicationContext(),"Menit "+ menit, Toast.LENGTH_SHORT).show();
+            sendLocationData();
+        }
+    };
 
     private void sendLocationData(){
         double lon = 0;
@@ -178,7 +186,22 @@ public class AuthService extends Service {
 
     private void writeLog(String tag){
         tag = Utility.getDateString(new Date(),"yyyy-MM-dd HH:mm:ss") +"  |  "+ tag;
-        FileProcessing.WriteFileToLog(getApplicationContext(),"dbug","AuthService.txt", tag);
+//        FileProcessing.WriteFileToLog(getApplicationContext(),"dbug","AuthService.txt", tag);
+    }
+
+    private class RunnableImpl implements Runnable {
+
+        public void run() {
+            while (start){
+                try {
+                    menit ++;
+                    mHandler.sendEmptyMessage(1);
+                    Thread.sleep(60000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
 }

@@ -84,6 +84,13 @@ public class TimerService extends Service {
         super.onDestroy();
     }
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        super.onStartCommand(intent, flags, startId);
+
+        return  START_STICKY;
+    }
+
     private void buildLocation() {
         Location location = getLastKnownLocation();
         if (location == null){

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,17 +14,24 @@ import com.balysv.materialripple.MaterialRippleLayout;
 import com.vma.smartfishingapp.R;
 import com.vma.smartfishingapp.database.table.DirectionDB;
 import com.vma.smartfishingapp.database.table.LocationDB;
+import com.vma.smartfishingapp.dom.VmaApiConstant;
 import com.vma.smartfishingapp.dom.VmaConstants;
+import com.vma.smartfishingapp.libs.LocationConverter;
 import com.vma.smartfishingapp.libs.Utility;
+import com.vma.smartfishingapp.libs.VmaPreferences;
 import com.vma.smartfishingapp.ui.component.ConfirmDialog;
 import com.vma.smartfishingapp.ui.component.option.OptionDialog;
 import com.vma.smartfishingapp.ui.master.MyFragment;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Date;
 
 public class LocationFragment extends MyFragment {
 
+    private LinearLayout lnly_empty;
     private MaterialRippleLayout mrly_add;
     private LocationAdapter adapter;
     private ArrayList<LocationHolder> listLocation = new ArrayList<>();
@@ -42,7 +50,7 @@ public class LocationFragment extends MyFragment {
 
     @Override
     protected void initLayout(View view) {
-
+        lnly_empty = view.findViewById(R.id.lnly_empty);
         RecyclerView rcvw_data = view.findViewById(R.id.rcvw_data);
         rcvw_data.setLayoutManager(new LinearLayoutManager(mActivity));
 
@@ -74,6 +82,12 @@ public class LocationFragment extends MyFragment {
             holder.setId(loc.id);
 
             listLocation.add(holder);
+        }
+        if (listLocation.size() == 0){
+            lnly_empty.setVisibility(View.VISIBLE);
+        }
+        else {
+            lnly_empty.setVisibility(View.GONE);
         }
         adapter.notifyDataSetChanged();
     }
@@ -159,9 +173,23 @@ public class LocationFragment extends MyFragment {
     }
 
     private void saveLocation(){
+        LocationConverter converter = null;
+        try {
+            JSONObject gpsLast = new JSONObject(VmaPreferences.get(mActivity, VmaApiConstant.GPS_LSAT_DATA));
+            double  lon = gpsLast.getDouble("longitude");
+            double  lat = gpsLast.getDouble("latitude");
+            converter = new LocationConverter(mActivity, lon,lat);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         SaveLocationDialog dialog = new SaveLocationDialog(mActivity);
-        dialog.show(null);
+        if (converter != null){
+            dialog.show(converter.getPoint());
+        }
+        else {
+            dialog.show(null);
+        }
         dialog.setOnSaveListener(db -> initData());
     }
 }

@@ -3,7 +3,8 @@ package com.vma.smartfishingapp.ui.logbook;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.text.SpannableString;
-import android.util.Log;
+import android.view.View;
+import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -12,21 +13,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.vma.smartfishingapp.R;
 import com.vma.smartfishingapp.database.table.LogbookDB;
 import com.vma.smartfishingapp.database.table.LogbookUploadDB;
-import com.vma.smartfishingapp.dom.DpiHolder;
 import com.vma.smartfishingapp.libs.Utility;
 import com.vma.smartfishingapp.service.MainService;
 import com.vma.smartfishingapp.ui.component.ConfirmDialog;
 import com.vma.smartfishingapp.ui.master.MyActivity;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
-import java.util.Date;
 
 public class LogbookActivity extends MyActivity {
 
+    private LinearLayout lnly_empty;
     LogbookAdapter adapter;
 
     ArrayList<LogbookHolder> listDpi = new ArrayList<>();
@@ -42,6 +38,9 @@ public class LogbookActivity extends MyActivity {
         RecyclerView rcvw_data = findViewById(R.id.rcvw_data);
         rcvw_data.setLayoutManager(new LinearLayoutManager(mActivity));
 
+        lnly_empty = findViewById(R.id.lnly_empty);
+        lnly_empty.setVisibility(View.VISIBLE);
+
         adapter = new LogbookAdapter(mActivity,listDpi);
         rcvw_data.setAdapter(adapter);
 
@@ -52,19 +51,6 @@ public class LogbookActivity extends MyActivity {
     protected void initData() {
         listDpi.clear();
         loadDB();
-//
-//        PostManager post = new PostManager(mActivity, ApiConfig.POST_DPI);
-//        post.addParam("longitude",lon);
-//        post.addParam("latitude",lat);
-//        post.addParam("distance",80);
-//        post.addParam("date",Utility.getDateString(new Date(),"yyyy-MM-dd"));
-//        post.exPost();
-//        post.setOnReceiveListener((obj, code, success, message) -> {
-//            if (success){
-//                loadData(obj);
-//            }
-//            adapter.notifyDataSetChanged();
-//        });
     }
 
     @Override
@@ -77,28 +63,6 @@ public class LogbookActivity extends MyActivity {
         adapter.setOnSelectedListener(this::confirmToDelete);
     }
 
-    private void loadData(JSONObject obj){
-        try {
-            JSONArray data = obj.getJSONArray("data");
-            for (int i=0; i<data.length(); i++){
-                JSONObject jo = data.getJSONObject(i);
-
-                DpiHolder holder = new DpiHolder();
-                holder.setDate(Utility.getDate(jo.getString("date"),"yyyy-MM-dd"));
-                holder.setLatitude(jo.getDouble("latitude"));
-                holder.setLongitude(jo.getDouble("longitude"));
-                holder.setDistance(jo.getDouble("distance"));
-
-                if (i ==0 ){
-                    Date date = Utility.getDate(jo.getString("date"),"yyyy-MM-dd");
-                }
-
-//                listDpi.add(holder);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
 
     @SuppressLint("NotifyDataSetChanged")
     private void loadDB(){
@@ -125,6 +89,10 @@ public class LogbookActivity extends MyActivity {
             listDpi.add(holder);
         }
         adapter.notifyDataSetChanged();
+        lnly_empty.setVisibility(View.VISIBLE);
+        if (listDpi.size() > 0){
+            lnly_empty.setVisibility(View.GONE);
+        }
     }
 
     @Override

@@ -150,7 +150,7 @@ public class DirectionStatusView extends MyView {
         LocationConverter converter = new LocationConverter(mActivity, db.longitude,db.latitude);
         mPoint = converter.getPoint();
 
-        String strLat = converter.getLatitudeDisplay(mActivity);
+        String strLat = converter.getLatitudeDisplay();
         String strLon = converter.getLongitudeDisplay();
         String strPos = String.format(Locale.ENGLISH, "%s\n%s", strLat, strLon );
         txvw_dirTo.setText(strPos);

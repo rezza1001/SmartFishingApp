@@ -32,7 +32,7 @@ public class VmaApplication extends Application {
         startService(new Intent(this, TimerService.class));
 
         startService(new Intent(this, MainService.class));
-        startService(new Intent(this, GpsService.class));
+//        startService(new Intent(this, GpsService.class));
         VmaLanguage.changeToIndonesia(this);
 
         new Handler().postDelayed(() -> startService(new Intent(this, LogbookService.class)),5000);

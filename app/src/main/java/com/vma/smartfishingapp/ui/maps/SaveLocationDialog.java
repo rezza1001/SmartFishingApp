@@ -45,6 +45,7 @@ public class SaveLocationDialog extends MyDialog {
         edtx_name = view.findViewById(R.id.edtx_name);
         edtx_name.setRequired();
         edtx_name.create(mActivity.getResources().getString(R.string.location_name));
+        edtx_name.setTitleColor(mActivity.getResources().getColor(R.color.text_standard));
 
         input_latitude = view.findViewById(R.id.input_latitude);
         input_latitude.create();

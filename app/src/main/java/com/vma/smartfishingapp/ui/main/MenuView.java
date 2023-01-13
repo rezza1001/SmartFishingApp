@@ -99,26 +99,47 @@ public class MenuView extends MyView {
 
     private void directTo(MenuHolder holder){
         if (holder.menu == MenuHolder.MENU.DPI){
+            if (listener!= null){
+                listener.onDirect(DpiActivity.class);
+            }
             startToActivity(new Intent(mActivity, DpiActivity.class));
         }
         else if (holder.menu == MenuHolder.MENU.LOGBOOK){
+            if (listener!= null){
+                listener.onDirect(LogbookActivity.class);
+            }
             startToActivity(new Intent(mActivity, LogbookActivity.class));
         }
         else if (holder.menu == MenuHolder.MENU.LOCATION){
+            if (listener!= null){
+                listener.onDirect(LocationActivity.class);
+            }
             startToActivity(new Intent(mActivity, LocationActivity.class));
         }
         else if (holder.menu == MenuHolder.MENU.WEATHER){
+            if (listener!= null){
+                listener.onDirect(WeatherActivity.class);
+            }
             startToActivity(new Intent(mActivity, WeatherActivity.class));
         }
         else if (holder.menu == MenuHolder.MENU.FISH_MAP){
+            if (listener!= null){
+                listener.onDirect(MainMapActivity.class);
+            }
             startToActivity(new Intent(mActivity, MainMapActivity.class));
         }
         else if (holder.menu == MenuHolder.MENU.CAMERA){
+            if (listener!= null){
+                listener.onDirect(LogbookActivity.class);
+            }
             if (cameraPackage.isEmpty()){
                 Intent camera_intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                mActivity.startActivityForResult(camera_intent, 1);
             }
             else {
+                if (listener!= null){
+                    listener.onDirect(LogbookActivity.class);
+                }
                 Intent launchIntent = mActivity.getPackageManager().getLaunchIntentForPackage(cameraPackage);
                 mActivity.startActivity( launchIntent );
             }
@@ -137,6 +158,9 @@ public class MenuView extends MyView {
 //            }
 //        }
         else if (holder.menu == MenuHolder.MENU.SETTING){
+            if (listener!= null){
+                listener.onDirect(SettingActivity.class);
+            }
 //            Intent launchIntent = mActivity.getPackageManager().getLaunchIntentForPackage(settingPackage);
             Intent intent = new Intent(mActivity, SettingActivity.class);
             mActivity.startActivity( intent );
@@ -150,5 +174,14 @@ public class MenuView extends MyView {
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         mActivity.startActivity(intent);
         mActivity.overridePendingTransition(0, 0);
+    }
+
+
+    private OnDirectListener listener;
+    public void setOnDirectListener(OnDirectListener listener){
+        this.listener = listener;
+    }
+    public interface OnDirectListener{
+        void onDirect(Class<?> mClass);
     }
 }

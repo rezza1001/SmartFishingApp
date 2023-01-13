@@ -137,6 +137,10 @@ public class EditTextForm extends MyView {
         Utility.showToastError(mActivity, message);
     }
 
+    public void setTitleColor(int color){
+        txvw_title.setTextColor(color);
+    }
+
     public void setValue(String value){
         if (edtx_form.getVisibility() == GONE){
             txvw_select.setText(value);

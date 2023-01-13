@@ -79,11 +79,11 @@ public class TrackInfoDialog extends MyDialog {
         try {
             JSONObject  joStart = new JSONObject(roomTrack.startPosition);
             LocationConverter convStart = new LocationConverter(mActivity,joStart.getString("longitude"),joStart.getString("latitude"));
-            String startPos = convStart.getLatitudeDisplay(mActivity) +" | "+convStart.getLongitudeDisplay();
+            String startPos = convStart.getLatitudeDisplay() +" | "+convStart.getLongitudeDisplay();
 
             JSONObject  joEnd = new JSONObject(roomTrack.endPosition);
             LocationConverter convEnd = new LocationConverter(mActivity, joEnd.getString("longitude"),joEnd.getString("latitude"));
-            String endPos = convEnd.getLatitudeDisplay(mActivity) +" | "+convEnd.getLongitudeDisplay();
+            String endPos = convEnd.getLatitudeDisplay() +" | "+convEnd.getLongitudeDisplay();
 
             String position = isStart ? startPos : endPos;
             if (isStart){

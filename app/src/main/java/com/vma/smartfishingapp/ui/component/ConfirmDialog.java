@@ -67,6 +67,11 @@ public class ConfirmDialog extends MyDialog {
         card_body.startAnimation(AnimationUtils.loadAnimation(mActivity, R.anim.zoom_in));
     }
 
+    public void setTextAction(String yes, String no){
+        bbtn_no.create(no,0);
+        bbtn_yes.create(yes,0);
+    }
+
     public void show(String title, SpannableString value) {
         super.show();
         txvw_title.setText(title);

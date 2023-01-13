@@ -3,6 +3,9 @@ package com.vma.smartfishingapp.ui.location;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.text.SpannableString;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -10,8 +13,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.vma.smartfishingapp.R;
 import com.vma.smartfishingapp.database.table.DirectionDB;
 import com.vma.smartfishingapp.database.table.LocationDB;
+import com.vma.smartfishingapp.dom.VmaApiConstant;
 import com.vma.smartfishingapp.dom.VmaConstants;
+import com.vma.smartfishingapp.libs.LocationConverter;
 import com.vma.smartfishingapp.libs.Utility;
+import com.vma.smartfishingapp.libs.VmaPreferences;
 import com.vma.smartfishingapp.ui.component.ConfirmDialog;
 import com.vma.smartfishingapp.ui.component.option.OptionDialog;
 import com.vma.smartfishingapp.ui.maps.LocationAdapter;
@@ -20,11 +26,15 @@ import com.vma.smartfishingapp.ui.maps.MainMapActivity;
 import com.vma.smartfishingapp.ui.maps.SaveLocationDialog;
 import com.vma.smartfishingapp.ui.master.MyActivity;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Date;
 
 public class LocationActivity extends MyActivity {
 
+    private LinearLayout lnly_empty;
     private LocationAdapter adapter;
     private final ArrayList<LocationHolder> listLocation = new ArrayList<>();
 
@@ -35,6 +45,7 @@ public class LocationActivity extends MyActivity {
 
     @Override
     protected void initLayout() {
+        lnly_empty = findViewById(R.id.lnly_empty);
 
         RecyclerView rcvw_data = findViewById(R.id.rcvw_data);
         rcvw_data.setLayoutManager(new LinearLayoutManager(mActivity));
@@ -62,6 +73,12 @@ public class LocationActivity extends MyActivity {
 
             listLocation.add(holder);
         }
+        if (listLocation.size() == 0){
+            lnly_empty.setVisibility(View.VISIBLE);
+        }
+        else {
+            lnly_empty.setVisibility(View.GONE);
+        }
         adapter.notifyDataSetChanged();
     }
 
@@ -69,7 +86,7 @@ public class LocationActivity extends MyActivity {
     protected void initListener() {
         adapter.setOnSelectedListener(this::showOption);
 
-        findViewById(R.id.fab_add).setOnClickListener(view -> saveLocation());
+        findViewById(R.id.fab_add).setOnClickListener(view -> addLocation());
     }
 
 
@@ -154,9 +171,24 @@ public class LocationActivity extends MyActivity {
         });
     }
 
-    private void saveLocation(){
+    private void addLocation(){
+        LocationConverter converter = null;
+        try {
+            JSONObject gpsLast = new JSONObject(VmaPreferences.get(mActivity, VmaApiConstant.GPS_LSAT_DATA));
+            double  lon = gpsLast.getDouble("longitude");
+            double  lat = gpsLast.getDouble("latitude");
+            converter = new LocationConverter(mActivity, lon,lat);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         SaveLocationDialog dialog = new SaveLocationDialog(mActivity);
-        dialog.show(null);
+        if (converter != null){
+            dialog.show(converter.getPoint());
+        }
+        else {
+            dialog.show(null);
+        }
         dialog.setOnSaveListener(db -> initData());
     }
 

@@ -1,9 +1,14 @@
 package com.vma.smartfishingapp.ui.maps;
 
+import android.Manifest;
+import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Point;
+import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -11,7 +16,12 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.vma.smartfishingapp.R;
+import com.vma.smartfishingapp.database.table.FlagDB;
 import com.vma.smartfishingapp.dom.VmaConstants;
+import com.vma.smartfishingapp.libs.Utility;
+import com.vma.smartfishingapp.ui.component.ConfirmDialog;
+import com.vma.smartfishingapp.ui.floating.FloatingSystem;
+import com.vma.smartfishingapp.ui.floating.Permission;
 import com.vma.smartfishingapp.ui.main.BottomMenuView;
 import com.vma.smartfishingapp.ui.master.MyActivity;
 
@@ -38,11 +48,22 @@ public class MainMapActivity extends MyActivity {
         intentFilter.addAction(VmaConstants.NOTIFY_SHOW_TRACK);
         registerReceiver(receiver,intentFilter);
 
+
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        FlagDB flagDB = new FlagDB();
+        int maxX = size.x;
+        int maxY = size.y;
+        flagDB.setFlag(mActivity, VmaConstants.SCREEN_X,maxX+"");
+        flagDB.setFlag(mActivity, VmaConstants.SCREEN_X,maxY+"");
+
     }
 
     @Override
     protected void initData() {
         createMap();
+        permission();
     }
 
     @Override
@@ -60,10 +81,10 @@ public class MainMapActivity extends MyActivity {
         });
     }
 
-//    @Override
-//    public void onBackPressed() {
-//        moveTaskToBack(true);
-//    }
+    @Override
+    public void onBackPressed() {
+        mActivity.finish();
+    }
 
     @Override
     protected void onDestroy() {
@@ -96,6 +117,17 @@ public class MainMapActivity extends MyActivity {
     }
 
 
+    private void permission() {
+        String[] permission = new String[]{Manifest.permission.SYSTEM_ALERT_WINDOW};
+        Utility.checkPermission(mActivity, permission);
+        if (Permission.checkOverlayDisplayPermission(mActivity)) {
+            Log.d(TAG, "Can showing overlay");
+            return;
+        }
+        Permission.requestOverlayDisplay(mActivity);
+
+    }
+
     BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -106,6 +138,8 @@ public class MainMapActivity extends MyActivity {
 
         }
     };
+
+
 
 
 

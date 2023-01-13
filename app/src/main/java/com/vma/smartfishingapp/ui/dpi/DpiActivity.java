@@ -2,6 +2,8 @@ package com.vma.smartfishingapp.ui.dpi;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -11,9 +13,12 @@ import com.vma.smartfishingapp.R;
 import com.vma.smartfishingapp.api.ApiConfig;
 import com.vma.smartfishingapp.api.PostManager;
 import com.vma.smartfishingapp.database.table.DirectionDB;
+import com.vma.smartfishingapp.database.table.DpiDB;
 import com.vma.smartfishingapp.dom.DpiHolder;
 import com.vma.smartfishingapp.dom.VmaApiConstant;
 import com.vma.smartfishingapp.dom.VmaConstants;
+import com.vma.smartfishingapp.libs.DistanceUnit;
+import com.vma.smartfishingapp.libs.LocationConverter;
 import com.vma.smartfishingapp.libs.Utility;
 import com.vma.smartfishingapp.libs.VmaPreferences;
 import com.vma.smartfishingapp.ui.component.option.OptionDialog;
@@ -30,6 +35,7 @@ import java.util.Date;
 
 public class DpiActivity extends MyActivity {
 
+    LinearLayout lnly_empty;
     TextView txvw_update;
     DpiAdapter adapter;
 
@@ -43,6 +49,7 @@ public class DpiActivity extends MyActivity {
     @Override
     protected void initLayout() {
         txvw_update = findViewById(R.id.txvw_update);
+        lnly_empty = findViewById(R.id.lnly_empty);
 
         RecyclerView rcvw_data = findViewById(R.id.rcvw_data);
         rcvw_data.setLayoutManager(new LinearLayoutManager(mActivity));
@@ -67,6 +74,12 @@ public class DpiActivity extends MyActivity {
             e.printStackTrace();
         }
 
+        if (!Utility.isNetworkConnected(mActivity)){
+            loadFormDB(lon, lat);
+            adapter.notifyDataSetChanged();
+            return;
+        }
+
         PostManager post = new PostManager(mActivity, ApiConfig.POST_DPI);
         post.addParam("longitude",lon);
         post.addParam("latitude",lat);
@@ -76,6 +89,12 @@ public class DpiActivity extends MyActivity {
         post.setOnReceiveListener((obj, code, success, message) -> {
             if (success){
                 loadData(obj);
+            }
+            if (listDpi.size() == 0){
+                lnly_empty.setVisibility(View.VISIBLE);
+            }
+            else {
+                lnly_empty.setVisibility(View.GONE);
             }
             adapter.notifyDataSetChanged();
         });
@@ -92,6 +111,9 @@ public class DpiActivity extends MyActivity {
     }
 
     private void loadData(JSONObject obj){
+        DpiDB mDPI = new DpiDB();
+        mDPI.clearData(mActivity);
+
         try {
             JSONArray data = obj.getJSONArray("data");
             for (int i=0; i<data.length(); i++){
@@ -101,19 +123,51 @@ public class DpiActivity extends MyActivity {
                 holder.setDate(Utility.getDate(jo.getString("date"),"yyyy-MM-dd"));
                 holder.setLatitude(jo.getDouble("latitude"));
                 holder.setLongitude(jo.getDouble("longitude"));
-                holder.setDistance(jo.getDouble("distance"));
+
+                double distance = jo.getDouble("distance") / 1.852;
+                holder.setDistance(distance);
+
+                DpiDB db = new DpiDB();
+                db.name = jo.getString("date");
+                db.date = jo.getString("date");
+                db.longitude = jo.getDouble("longitude");
+                db.latitude = jo.getDouble("latitude");
+                db.insert(mActivity);
 
                 if (i ==0 ){
                     Date date = Utility.getDate(jo.getString("date"),"yyyy-MM-dd");
                     txvw_update.setText(Utility.getDateString(date,"dd MMM yyyy"));
                 }
-
                 listDpi.add(holder);
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
+
+    private void loadFormDB(double longitude, double latitude){
+        DpiDB db = new DpiDB();
+        ArrayList<DpiDB> dpiDBS = db.getAll(mActivity);
+        for (DpiDB dpidb : dpiDBS){
+            DpiHolder holder = new DpiHolder();
+            holder.setDate(Utility.getDate(dpidb.date,"yyyy-MM-dd"));
+            holder.setLatitude(dpidb.latitude);
+            holder.setLongitude(dpidb.longitude);
+
+            DistanceUnit unit = new DistanceUnit(mActivity);
+            unit.calcDistance(dpidb.latitude,dpidb.longitude,latitude,longitude);
+            holder.setDistance(unit.getNm());
+
+            if (listDpi.size() == 0){
+                Date date = Utility.getDate(dpidb.date,"yyyy-MM-dd");
+                txvw_update.setText(Utility.getDateString(date,"dd MMM yyyy"));
+            }
+
+            listDpi.add(holder);
+        }
+    }
+
+
 
     private void direct(LocationHolder holder){
         DirectionDB db = new DirectionDB();

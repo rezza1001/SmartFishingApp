@@ -2,11 +2,11 @@ package com.vma.smartfishingapp.ui.main;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
@@ -20,7 +20,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -28,6 +27,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.bumptech.glide.Glide;
 import com.vma.smartfishingapp.R;
 import com.vma.smartfishingapp.api.ApiConfig;
+import com.vma.smartfishingapp.database.table.DirectionDB;
 import com.vma.smartfishingapp.libs.Utility;
 import com.vma.smartfishingapp.ui.auth.RegisterActivity;
 import com.vma.smartfishingapp.ui.component.VmaButton;
@@ -35,6 +35,7 @@ import com.vma.smartfishingapp.ui.component.ConfirmDialog;
 import com.vma.smartfishingapp.ui.component.LoginDialog;
 import com.vma.smartfishingapp.dom.MenuHolder;
 import com.vma.smartfishingapp.dom.VmaConstants;
+import com.vma.smartfishingapp.ui.floating.FloatingSystem;
 import com.vma.smartfishingapp.ui.master.MyActivity;
 import com.vma.smartfishingapp.service.AuthService;
 
@@ -49,6 +50,8 @@ public class MainActivity extends MyActivity {
     RelativeLayout rvly_profile;
     TextView txvw_ship,txvw_owner;
     CircleImageView imvw_kapal;
+
+    private boolean canPause = false;
 
     @Override
     protected int setLayout() {
@@ -80,6 +83,8 @@ public class MainActivity extends MyActivity {
         intentFilter.addAction(VmaConstants.VMA_TIMER_TASK);
         intentFilter.addAction(VmaConstants.NOTIFY_RELOAD);
         registerReceiver(receiver,intentFilter);
+
+        stopService(new Intent(mActivity, FloatingSystem.class));
     }
 
     @Override
@@ -138,6 +143,9 @@ public class MainActivity extends MyActivity {
         menu_bottom_1.addMenu(new MenuHolder(MenuHolder.MENU.DPI,"DPI",R.drawable.ic_dpi, createDrawable(R.drawable.menu_message)));
         menu_bottom_1.addMenu(new MenuHolder(MenuHolder.MENU.LOCATION,"Lokasi",R.drawable.ic_pin_save, createDrawable(R.drawable.menu_sos)));
         menu_bottom_1.addMenu(new MenuHolder(MenuHolder.MENU.SETTING,getResources().getString(R.string.setting),R.drawable.ic_settings, createDrawable(R.drawable.menu_setting)));
+
+        menu_bottom_0.setOnDirectListener(mClass -> canPause = false);
+        menu_bottom_1.setOnDirectListener(mClass -> canPause = false);
     }
 
     private Drawable createDrawable(int res){
@@ -150,6 +158,7 @@ public class MainActivity extends MyActivity {
         dialog.setOnActionListener(new LoginDialog.OnActionListener() {
             @Override
             public void onRegister() {
+                canPause = false;
                 Intent intent = new Intent(mActivity, RegisterActivity.class);
                 mActivity.startActivityForResult(intent,1);
             }
@@ -189,6 +198,7 @@ public class MainActivity extends MyActivity {
         String packageName = getPackageName();
         PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
         if (!pm.isIgnoringBatteryOptimizations(packageName)) {
+            canPause = false;
             intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
             intent.setData(Uri.parse("package:" + packageName));
             startActivity(intent);
@@ -214,6 +224,40 @@ public class MainActivity extends MyActivity {
     @Override
     public void onBackPressed() {
         moveTaskToBack(true);
+        minimizeMode();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+       if (canPause){
+           minimizeMode();
+       }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        canPause = true;
+    }
+
+    private void minimizeMode(){
+        DirectionDB db = new DirectionDB();
+        if (db.getAll(mActivity).size() >= 1){
+            if (!isMyServiceRunning()){
+                startService(new Intent(mActivity, FloatingSystem.class));
+            }
+        }
+    }
+
+    private boolean isMyServiceRunning() {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (FloatingSystem.class.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
@@ -242,9 +286,6 @@ public class MainActivity extends MyActivity {
         }
 
     }
-
-
-
 
 
 }

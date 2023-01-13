@@ -100,7 +100,7 @@ public class LocationConverter {
             return getDisplaySecond(Type.LONGITUDE);
     }
 
-    public String getLatitudeDisplay(Context context){
+    public String getLatitudeDisplay(){
         Log.d(TAG,"getLatitudeDisplay format "+format);
         if (format == VmaGlobalConfig.FORMAT_COORDINATE_DEGREE){
             return getDisplayDegree(Type.LATITUDE);

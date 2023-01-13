@@ -10,6 +10,7 @@ import com.vma.smartfishingapp.BuildConfig;
 import com.vma.smartfishingapp.database.table.AccountDB;
 import com.vma.smartfishingapp.database.table.BlackBoxDB;
 import com.vma.smartfishingapp.database.table.DirectionDB;
+import com.vma.smartfishingapp.database.table.DpiDB;
 import com.vma.smartfishingapp.database.table.FlagDB;
 import com.vma.smartfishingapp.database.table.LocationDB;
 import com.vma.smartfishingapp.database.table.LogbookUploadDB;
@@ -23,7 +24,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
     public static final String TAG = "RZDB";
 
     public static final String DATABASE_NAME = "VMA_MOBILE.db";
-    private static final int DB_VERSION      = 14;
+    private static final int DB_VERSION      = 15;
     private static ArrayList<MasterDB> tables = new ArrayList<>();
 
     private Context mContext;
@@ -152,6 +153,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
         tables.add(new LogbookDB());
         tables.add(new LogbookUploadDB());
         tables.add(new BlackBoxDB());
+        tables.add(new DpiDB());
 
     }
 }

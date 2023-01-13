@@ -22,9 +22,9 @@ public class Compass implements SensorEventListener {
     private float declination = 0;
     private SensorManager mSensorManager;
     private int lastAngel = 0;
-    private Activity activity;
+    private Context activity;
 
-    public void create(Activity activity){
+    public void create(Context activity){
         this.activity = activity;
         mSensorManager = (SensorManager) activity.getSystemService(Context.SENSOR_SERVICE);
     }

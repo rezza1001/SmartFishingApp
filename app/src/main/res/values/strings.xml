@@ -151,4 +151,9 @@
     <string name="take_photo">Ambil Foto</string>
     <string name="choose_image">Pilih Gambar</string>
     <string name="backround_access_info">Smartfishing membutuhkan akses lokasi sepanjang waktu.</string>
+    <string name="floating_access_request">Smartfishing membutuhkan akses untuk minimize system.</string>
+    <string name="are_you_use_minimize_mode">Apkah anda akan menggunakan tampilan minimize</string>
+    <string name="empty_logbook">Tidak ada data Logbook</string>
+    <string name="empty_dpi">Tidak ada data DPI</string>
+    <string name="empty_location">Tidak ada data lokasi Tersimpan</string>
 </resources>
