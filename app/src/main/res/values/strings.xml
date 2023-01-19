@@ -42,8 +42,9 @@
     <string name="setting" translatable="true">Pengaturan</string>
     <string name="brightness" translatable="true">Kecerahan</string>
     <string name="display" translatable="true">Tampilan</string>
-    <string name="about_vma" translatable="true">Tentang VMA</string>
+    <string name="about_vma" translatable="true">Tentang Smartfishing</string>
     <string name="version_info" translatable="true">Informasi Versi</string>
+    <string name="information" translatable="true">Informasi</string>
     <string name="term_to_use" translatable="true">Ketentuan Penggunaan</string>
     <string name="light_mode" translatable="true">Mode Terang</string>
     <string name="dark_mode" translatable="true">Mode Gelap</string>
@@ -156,4 +157,11 @@
     <string name="empty_logbook">Tidak ada data Logbook</string>
     <string name="empty_dpi">Tidak ada data DPI</string>
     <string name="empty_location">Tidak ada data lokasi Tersimpan</string>
+    <string name="check_version_app">Cek Versi Aplikasi..</string>
+    <string name="version_app_uptodate">Versi Aplikasi #X1 sudah terbaru</string>
+    <string name="new_version">Versi terbaru</string>
+    <string name="new_version_app">Versi terbaru Smartfishing #X1 \n #X2</string>
+    <string name="upgrade4_text_title" >Memuat Aplikasi Baru</string>
+    <string name="download_finish" >Apk Download</string>
+    <string name="download_apk_desc" >File APK berhasil di download. File Apk tersimpan di #X1.\nInstall Apk sekarang?</string>
 </resources>

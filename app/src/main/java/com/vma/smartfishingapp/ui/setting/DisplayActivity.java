@@ -88,7 +88,7 @@ public class DisplayActivity extends MyActivity {
         OptionDialog dialog = new OptionDialog(mActivity);
         dialog.show();
         dialog.addOption("id", "Indonesia");
-        dialog.addOption("en", "English");
+//        dialog.addOption("en", "English");
         dialog.setOnSelectedListener((bundle, index) -> {
             String code = bundle.getString("id");
             if (code.equals("id")){
@@ -116,7 +116,7 @@ public class DisplayActivity extends MyActivity {
         dialog.show();
         dialog.addOption(VmaTheme.NIGHT_MODE, getResources().getString(R.string.dark_mode));
         dialog.addOption(VmaTheme.DAY_MODE, getResources().getString(R.string.light_mode));
-        dialog.addOption(VmaTheme.AUTO_MODE, getResources().getString(R.string.automatic),automaticDescription);
+//        dialog.addOption(VmaTheme.AUTO_MODE, getResources().getString(R.string.automatic),automaticDescription);
         dialog.setOnSelectedListener((bundle, index) -> {
             VmaTheme.setTheme(mActivity, bundle.getInt("id"));
             int position = 1;

@@ -8,17 +8,25 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.vma.smartfishingapp.R;
 import com.vma.smartfishingapp.dom.VmaConstants;
 import com.vma.smartfishingapp.ui.auth.RegisterActivity;
+import com.vma.smartfishingapp.ui.component.Loading;
 import com.vma.smartfishingapp.ui.component.LoginDialog;
 import com.vma.smartfishingapp.ui.master.MyActivity;
 import com.vma.smartfishingapp.ui.profile.ProfileActivity;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class SettingActivity extends MyActivity {
     enum Setting {PROFILE,BRIGHTNESS, DISPLAY, ABOUT_VMA, VERSION_INFO, TERMS}
@@ -79,6 +87,7 @@ public class SettingActivity extends MyActivity {
 //                    startActivity(new Intent(mActivity, AboutVmaActivity.class));
                     break;
                 case VERSION_INFO:
+                        versionInfo();
 //                    VersionAppController controller = new VersionAppController(mActivity);
 //                    controller.checkVersion();
                     break;
@@ -116,7 +125,6 @@ public class SettingActivity extends MyActivity {
         }
     }
 
-
     private void showLogin(){
         LoginDialog dialog = new LoginDialog(mActivity);
         dialog.show();
@@ -134,5 +142,17 @@ public class SettingActivity extends MyActivity {
                 new Handler().postDelayed(() -> sendBroadcast(new Intent(VmaConstants.NOTIFY_RELOAD)),100);
             }
         });
+    }
+
+    private void versionInfo(){
+        VersionDialog dialog = new VersionDialog(mActivity);
+        dialog.show();
+        dialog.setonCheckListener(this::checkVersionFromFB);
+    }
+
+    private void checkVersionFromFB(){
+        VersionController controller = new VersionController(mActivity);
+        controller.checkVersion();
+
     }
 }

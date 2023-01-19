@@ -59,8 +59,8 @@ public class CoordinateFormatDialog extends MyDialog {
         adapter = new DisplayAdapter();
         rcvw_data.setAdapter(adapter);
 
-        addOption(VmaGlobalConfig.FORMAT_COORDINATE_SECONDS,mActivity.getResources().getString(R.string.decimal_seconds));
-        addOption(VmaGlobalConfig.FORMAT_COORDINATE_MINUTE,mActivity.getResources().getString(R.string.decimal_minutes));
+//        addOption(VmaGlobalConfig.FORMAT_COORDINATE_SECONDS,mActivity.getResources().getString(R.string.decimal_seconds));
+//        addOption(VmaGlobalConfig.FORMAT_COORDINATE_MINUTE,mActivity.getResources().getString(R.string.decimal_minutes));
         addOption(VmaGlobalConfig.FORMAT_COORDINATE_DEGREE,mActivity.getResources().getString(R.string.decimal_degree));
     }
 

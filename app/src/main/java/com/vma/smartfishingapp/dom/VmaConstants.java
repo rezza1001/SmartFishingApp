@@ -35,4 +35,10 @@ public class VmaConstants {
 
     public static String SCREEN_X = "screen_x";
     public static String SCREEN_Y = "screen_y";
+
+
+    /*
+     * TODO FIREBASE
+     */
+    public static String COLLECTION_VERSION = "VERSION";
 }
