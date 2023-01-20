@@ -164,4 +164,6 @@
     <string name="upgrade4_text_title" >Memuat Aplikasi Baru</string>
     <string name="download_finish" >Apk Download</string>
     <string name="download_apk_desc" >File APK berhasil di download. File Apk tersimpan di #X1.\nInstall Apk sekarang?</string>
+    <string name="premium" >Premium</string>
+    <string name="free" >Free</string>
 </resources>

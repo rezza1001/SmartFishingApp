@@ -28,6 +28,7 @@ public class AccountDB extends MasterDB {
     public static final String IMAGE = "image";
     public static final String MKEY = "mkey";
     public static final String IMEI = "imei";
+    public static final String REG_STATUS = "reg_status";
 
     public String username = "";
     public String password = "";
@@ -40,6 +41,7 @@ public class AccountDB extends MasterDB {
     public String sipi = "";
     public String image = "";
     public String gt = "";
+    public boolean regStatus = false;
 
     @Override
     protected ContentValues createContentValues() {
@@ -55,6 +57,7 @@ public class AccountDB extends MasterDB {
         contentValues.put(SIPI, sipi);
         contentValues.put(IMAGE, image);
         contentValues.put(GT, gt);
+        contentValues.put(REG_STATUS, regStatus ? 1 : 0);
         return contentValues;
     }
 
@@ -72,6 +75,7 @@ public class AccountDB extends MasterDB {
                 " " + ADDRESS + " varchar(200) NULL ," +
                 " " + SIPI + " varchar(20) NULL ," +
                 " " + IMAGE + " varchar(200) NULL ," +
+                " " + REG_STATUS + " Integer default 0 ," +
                 " " + GT + " varchar(5) NULL " +
                 "  )";
         Log.d(TAG,create);
@@ -98,6 +102,7 @@ public class AccountDB extends MasterDB {
         resultDB.sipi = res.getString(res.getColumnIndex(SIPI));
         resultDB.image = res.getString(res.getColumnIndex(IMAGE));
         resultDB.gt = res.getString(res.getColumnIndex(GT));
+        resultDB.regStatus = res.getInt(res.getColumnIndex(REG_STATUS)) == 1;
 
         return resultDB;
     }
@@ -116,6 +121,7 @@ public class AccountDB extends MasterDB {
         this.sipi = res.getString(res.getColumnIndex(SIPI));
         this.image = res.getString(res.getColumnIndex(IMAGE));
         this.gt = res.getString(res.getColumnIndex(GT));
+        this.regStatus = res.getInt(res.getColumnIndex(REG_STATUS)) == 1;
     }
 
     @Override

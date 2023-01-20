@@ -15,6 +15,7 @@ import android.graphics.drawable.shapes.OvalShape;
 import android.graphics.drawable.shapes.RoundRectShape;
 import android.location.Location;
 import android.net.ConnectivityManager;
+import android.provider.Settings;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -419,6 +420,24 @@ public class Utility {
         Log.d("Utility","calDistance location1 ("+lat1+","+lon1+") | location2 ("+lat2+","+lon2+") = "+ distance);
 
         return distance;
+    }
+
+    public static boolean isRoot(String su) {
+        Process process = null;
+        try {
+            process = Runtime.getRuntime().exec(su);
+            return true;
+        } catch (Exception e) {
+            return false;
+        } finally {
+            if (process != null) {
+                try {
+                    process.destroy();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     public static boolean isNetworkConnected(Activity activity) {

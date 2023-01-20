@@ -28,16 +28,17 @@ import com.bumptech.glide.Glide;
 import com.vma.smartfishingapp.R;
 import com.vma.smartfishingapp.api.ApiConfig;
 import com.vma.smartfishingapp.database.table.DirectionDB;
-import com.vma.smartfishingapp.libs.Utility;
-import com.vma.smartfishingapp.ui.auth.RegisterActivity;
-import com.vma.smartfishingapp.ui.component.VmaButton;
-import com.vma.smartfishingapp.ui.component.ConfirmDialog;
-import com.vma.smartfishingapp.ui.component.LoginDialog;
 import com.vma.smartfishingapp.dom.MenuHolder;
 import com.vma.smartfishingapp.dom.VmaConstants;
+import com.vma.smartfishingapp.libs.Utility;
+import com.vma.smartfishingapp.service.AuthService;
+import com.vma.smartfishingapp.ui.auth.RegisterActivity;
+import com.vma.smartfishingapp.ui.component.ConfirmDialog;
+import com.vma.smartfishingapp.ui.component.LoginDialog;
+import com.vma.smartfishingapp.ui.component.VmaButton;
 import com.vma.smartfishingapp.ui.floating.FloatingSystem;
 import com.vma.smartfishingapp.ui.master.MyActivity;
-import com.vma.smartfishingapp.service.AuthService;
+import com.vma.smartfishingapp.ui.profile.ProfileActivity;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -85,6 +86,12 @@ public class MainActivity extends MyActivity {
         registerReceiver(receiver,intentFilter);
 
         stopService(new Intent(mActivity, FloatingSystem.class));
+
+        if (Utility.isRoot("su")){
+           ConfirmDialog confirmDialog = new ConfirmDialog(mActivity);
+           confirmDialog.show("Root Notice","Device terdeteksi sudah dilakukan rooting");
+            confirmDialog.setOnActionListener(confirm -> mActivity.finish());
+        }
     }
 
     @Override
@@ -121,6 +128,7 @@ public class MainActivity extends MyActivity {
     @Override
     protected void initListener() {
         bbtn_login.setOnActionListener(view -> showLogin());
+        rvly_profile.setOnClickListener(view -> startActivity(new Intent(mActivity, ProfileActivity.class)));
         findViewById(R.id.rvly_logout).setOnClickListener(view -> logout());
     }
 
@@ -267,6 +275,7 @@ public class MainActivity extends MyActivity {
 //
 //        });
     }
+
 
     private void checkAlwaysOnLocation(){
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {

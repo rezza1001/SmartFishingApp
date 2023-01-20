@@ -38,6 +38,8 @@ public class VmaApplication extends Application {
         new Handler().postDelayed(() -> startService(new Intent(this, LogbookService.class)),5000);
 
         initSettingVMA();
+
+        // Check Root
     }
 
     private void initSettingVMA(){

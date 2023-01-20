@@ -129,11 +129,23 @@ public class MainService extends Service {
             Log.e(TAG,"LOCATION NULL OR NOT FOUND");
             return;
         }
+        String note = "Provider";
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (location.isMock()){
+                note = "FAKE GPS";
+            }
+        }else {
+            if ( location.isFromMockProvider()){
+                note = "FAKE GPS";
+            }
+        }
+
         JSONObject jo = new JSONObject();
         try {
             jo.put(VmaApiConstant.RF_ITEM_CMD, VMA_COMMAND.GNRMC.getValue());
             jo.put(VmaApiConstant.GPS_ITEM_LON, location.getLongitude());
             jo.put(VmaApiConstant.GPS_ITEM_LAT, location.getLatitude());
+            jo.put(VmaApiConstant.GPS_NOTE, note);
 
             int speedKm = 0;
             if (location.hasSpeed()){

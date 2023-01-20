@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.location.Location;
 import android.net.ConnectivityManager;
 import android.os.Handler;
 import android.os.IBinder;
@@ -82,11 +83,13 @@ public class AuthService extends Service {
         double lat = 0;
         double speed = 0;
         double course = 0;
+        String note = "";
         try {
             JSONObject gpsLast = new JSONObject(VmaPreferences.get(getApplicationContext(), VmaApiConstant.GPS_LSAT_DATA));
             lon = gpsLast.getDouble(VmaApiConstant.GPS_ITEM_LON);
             lat = gpsLast.getDouble(VmaApiConstant.GPS_ITEM_LAT);
             speed = gpsLast.getDouble(VmaApiConstant.GPS_ITEM_SPEED);
+            note = gpsLast.getString(VmaApiConstant.GPS_NOTE);
 //            speed = ThreadLocalRandom.current().nextDouble(0, 11);
             course = gpsLast.getDouble(VmaApiConstant.GPS_ITEM_BEARING);
         } catch (JSONException e) {
@@ -115,13 +118,13 @@ public class AuthService extends Service {
 //        }
 
         if (menit % 2 == 0 && speed >= 5){
-            sendToAPI(lon, lat, speed, course);
+            sendToAPI(lon, lat, speed, course,note);
         }
         if (menit % 5 == 0  && (speed >= 3 &&  speed < 5)){
-            sendToAPI(lon, lat, speed, course);
+            sendToAPI(lon, lat, speed, course,note);
         }
         if (menit % 15 == 0  && (speed < 3)){
-            sendToAPI(lon, lat, speed, course);
+            sendToAPI(lon, lat, speed, course,note);
         }
         if (menit % 60 == 0  ){
             menit = 0;
@@ -139,7 +142,7 @@ public class AuthService extends Service {
         return  START_STICKY;
     }
 
-    private void sendToAPI(double lon, double lat, double speed, double course){
+    private void sendToAPI(double lon, double lat, double speed, double course, String note){
         if (!isNetworkConnected()){
             Log.e(TAG,"Network Failed");
             writeLog("Network Failed");
@@ -153,7 +156,7 @@ public class AuthService extends Service {
         post.addParam("speed", speed);
         post.addParam("course", course);
         post.addParam("status", "Online");
-        post.addParam("note", "Automatic "+menit+" Menit");
+        post.addParam("note", note );
         post.addParam("time", Utility.getDateString(new Date(),"yyyy-MM-dd HH:mm:ss"));
         post.showloading(false);
         post.exPost();

@@ -25,7 +25,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
     public static final String TAG = "RZDB";
 
     public static final String DATABASE_NAME = "VMA_MOBILE.db";
-    private static final int DB_VERSION      = 17;
+    private static final int DB_VERSION      = 18;
     private static ArrayList<MasterDB> tables = new ArrayList<>();
 
     private Context mContext;

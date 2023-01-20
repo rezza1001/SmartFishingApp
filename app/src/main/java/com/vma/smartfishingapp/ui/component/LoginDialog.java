@@ -127,6 +127,7 @@ public class LoginDialog extends MyDialog {
             db.sipi = data.getString("sipi");
             db.gt = data.getString("gt");
             db.image = data.getString("image");
+            db.regStatus = data.getBoolean("register_status");
             db.insert(mActivity);
             if (onActionListener != null){
                 Utility.showToastSuccess(mActivity,"Login Success !");

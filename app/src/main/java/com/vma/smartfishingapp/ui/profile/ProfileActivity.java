@@ -2,7 +2,10 @@ package com.vma.smartfishingapp.ui.profile;
 
 import android.content.Intent;
 import android.os.Handler;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
 import com.vma.smartfishingapp.R;
@@ -16,7 +19,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class ProfileActivity extends MyActivity {
 
     ItemView item_imei,item_owner,item_phone,item_address,item_sipi,item_gt,item_username;
-    TextView txvw_name;
+    TextView txvw_name,txvw_status;
+    ImageView imvw_status;
     CircleImageView imvw_profile;
 
     @Override
@@ -35,12 +39,13 @@ public class ProfileActivity extends MyActivity {
         item_sipi = findViewById(R.id.item_sipi);
         item_gt = findViewById(R.id.item_gt);
         item_username = findViewById(R.id.item_username);
+        txvw_status = findViewById(R.id.txvw_status);
+        imvw_status = findViewById(R.id.imvw_status);
     }
 
     @Override
     protected void initData() {
         if (mAccountDB.imei.isEmpty()){
-
             return;
         }
 
@@ -54,6 +59,17 @@ public class ProfileActivity extends MyActivity {
         txvw_name.setText(mAccountDB.shipName);
         if (!mAccountDB.image.isEmpty()){
             Glide.with(mActivity).load(ApiConfig.PATH_IMAGE +mAccountDB.image).into(imvw_profile);
+        }
+
+        if (mAccountDB.regStatus){
+            imvw_status.setImageResource(R.drawable.ic_verified);
+            txvw_status.setText(getResources().getString(R.string.premium));
+            txvw_status.setTextColor(ContextCompat.getColor(mActivity,R.color.gold));
+        }
+        else {
+            imvw_status.setImageResource(R.drawable.ic_unpaid);
+            txvw_status.setText(getResources().getString(R.string.free));
+            txvw_status.setTextColor(ContextCompat.getColor(mActivity,R.color.red));
         }
 
     }

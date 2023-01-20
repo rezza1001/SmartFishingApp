@@ -118,6 +118,7 @@ public class VmaApiConstant {
     public static final String GPS_ITEM_SPEED   = "speed";
     public static final String GPS_ITEM_BEARING   = "bearing"; // bearing
     public static final String GPS_LSAT_DATA   = "gpsLastData";
+    public static final String GPS_NOTE   = "gpsNote";
 
     //  Add-on Version
     public static final String ADDON_VER_1_05  = "1.05";
