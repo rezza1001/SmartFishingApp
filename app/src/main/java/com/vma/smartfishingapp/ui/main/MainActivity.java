@@ -90,7 +90,7 @@ public class MainActivity extends MyActivity {
         if (Utility.isRoot("su")){
            ConfirmDialog confirmDialog = new ConfirmDialog(mActivity);
            confirmDialog.show("Root Notice","Device terdeteksi sudah dilakukan rooting");
-            confirmDialog.setOnActionListener(confirm -> mActivity.finish());
+           confirmDialog.setOnActionListener(confirm -> mActivity.finish());
         }
     }
 
@@ -100,7 +100,6 @@ public class MainActivity extends MyActivity {
 
         rvly_profile.clearAnimation();
         bbtn_login.clearAnimation();
-        Log.d("TAGRZ_RE","initData imei "+mAccountDB.imei);
         Glide.with(mActivity).load(R.drawable.default_kapal).into(imvw_kapal);
         if (mAccountDB.imei.isEmpty()){
             rvly_profile.startAnimation(AnimationUtils.loadAnimation(mActivity, R.anim.zoom_out));

@@ -2,9 +2,12 @@ package com.vma.smartfishingapp.ui.maps;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Handler;
 import android.view.View;
 import android.view.animation.AnimationUtils;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,7 +18,9 @@ import com.esri.arcgisruntime.geometry.SpatialReferences;
 import com.vma.smartfishingapp.R;
 import com.vma.smartfishingapp.libs.DistanceUnit;
 import com.vma.smartfishingapp.libs.LocationConverter;
+import com.vma.smartfishingapp.libs.ShareLocation;
 import com.vma.smartfishingapp.libs.VmaUtils;
+import com.vma.smartfishingapp.ui.component.option.OptionDialog;
 import com.vma.smartfishingapp.ui.master.MyDialog;
 
 import java.util.Locale;
@@ -24,6 +29,7 @@ public class LocationInfoDialog extends MyDialog {
 
     private CardView card_body;
     private TextView txvw_location,txvw_distance,txvw_heading;
+    private RelativeLayout rvly_share;
 
     private Point distancePoint;
 
@@ -43,6 +49,7 @@ public class LocationInfoDialog extends MyDialog {
         txvw_location = view.findViewById(R.id.txvw_location);
         txvw_distance = view.findViewById(R.id.txvw_distance);
         txvw_heading = view.findViewById(R.id.txvw_heading);
+        rvly_share = view.findViewById(R.id.rvly_share);
         card_body.setVisibility(View.INVISIBLE);
 
         view.findViewById(R.id.rvly_root).setOnClickListener(view1 -> dismiss());
@@ -57,6 +64,13 @@ public class LocationInfoDialog extends MyDialog {
                 onActonListener.onDirect(distancePoint,distancePoint.getX(),distancePoint.getY());
                 dismiss();
             }
+        });
+
+        rvly_share.setOnClickListener(view1 -> {
+            double latitude = distancePoint.getY();
+            double  longitude = distancePoint.getX();
+            ShareLocation shareLocation = new ShareLocation(mActivity);
+            shareLocation.share(latitude, longitude);
         });
     }
 
@@ -96,6 +110,7 @@ public class LocationInfoDialog extends MyDialog {
         }
         new Handler().postDelayed(super::dismiss,500);
     }
+
 
 
     private OnActonListener onActonListener;

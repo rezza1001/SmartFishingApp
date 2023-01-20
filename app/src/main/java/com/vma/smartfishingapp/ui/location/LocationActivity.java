@@ -16,6 +16,7 @@ import com.vma.smartfishingapp.database.table.LocationDB;
 import com.vma.smartfishingapp.dom.VmaApiConstant;
 import com.vma.smartfishingapp.dom.VmaConstants;
 import com.vma.smartfishingapp.libs.LocationConverter;
+import com.vma.smartfishingapp.libs.ShareLocation;
 import com.vma.smartfishingapp.libs.Utility;
 import com.vma.smartfishingapp.libs.VmaPreferences;
 import com.vma.smartfishingapp.ui.component.ConfirmDialog;
@@ -96,6 +97,7 @@ public class LocationActivity extends MyActivity {
         dialog.addChooser(getResources().getString(R.string.goto_location));
         dialog.addChooser(getResources().getString(R.string.edit_location));
         dialog.addChooser(getResources().getString(R.string.delete));
+        dialog.addChooser(getResources().getString(R.string.share_location));
 
         dialog.setOnSelectListener((bundle, value) -> {
             if (value.equals(getResources().getString(R.string.delete))){
@@ -103,6 +105,12 @@ public class LocationActivity extends MyActivity {
             }
             else if (value.equals(getResources().getString(R.string.edit_location))){
                 editLocation(holder);
+            }
+            else if (value.equals(getResources().getString(R.string.share_location))){
+                double latitude = holder.getLatitude();
+                double  longitude = holder.getLongitude();
+                ShareLocation shareLocation = new ShareLocation(mActivity);
+                shareLocation.share(latitude, longitude);
             }
             else {
                 direct(holder);

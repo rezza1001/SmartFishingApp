@@ -166,4 +166,5 @@
     <string name="download_apk_desc" >File APK berhasil di download. File Apk tersimpan di #X1.\nInstall Apk sekarang?</string>
     <string name="premium" >Premium</string>
     <string name="free" >Free</string>
+    <string name="share_location" >Bagikan Lokasi</string>
 </resources>
