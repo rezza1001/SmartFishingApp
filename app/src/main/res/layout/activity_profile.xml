@@ -13,7 +13,7 @@
         android:layout_height="56dp">
 
         <ImageView
-            android:id="@+id/imvw_icon"
+            android:id="@+id/imvw_back"
             android:layout_marginStart="20dp"
             android:layout_centerVertical="true"
             android:src="@drawable/ic_manage_accounts_24"
@@ -24,7 +24,7 @@
             android:orientation="horizontal"
             android:layout_marginStart="5dp"
             android:gravity="center_vertical"
-            android:layout_toEndOf="@+id/imvw_icon"
+            android:layout_toEndOf="@+id/imvw_back"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <TextView
@@ -43,14 +43,20 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/imvw_profile"
-            app:civ_border_width="1dp"
-            app:civ_border_color="@color/white"
-            android:src="@drawable/default_kapal"
+        <RelativeLayout
+            android:id="@+id/rvly_picture"
             android:layout_centerHorizontal="true"
             android:layout_width="70dp"
-            android:layout_height="70dp"/>
+            android:layout_height="wrap_content">
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/imvw_profile"
+                app:civ_border_width="1dp"
+                app:civ_border_color="@color/white"
+                android:src="@drawable/default_kapal"
+                android:layout_width="70dp"
+                android:layout_height="70dp"/>
+        </RelativeLayout>
+
         <TextView
             android:id="@+id/txvw_name"
             android:text="Kapal Name"
@@ -59,7 +65,7 @@
             android:textColor="@color/textWhite"
             android:fontFamily="@font/roboto_medium"
             android:textSize="16sp"
-            android:layout_below="@+id/imvw_profile"
+            android:layout_below="@+id/rvly_picture"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
         <LinearLayout

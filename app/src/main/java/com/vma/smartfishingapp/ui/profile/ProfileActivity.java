@@ -3,13 +3,18 @@ package com.vma.smartfishingapp.ui.profile;
 import android.content.Intent;
 import android.os.Handler;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.signature.ObjectKey;
 import com.vma.smartfishingapp.R;
+import com.vma.smartfishingapp.VmaApplication;
 import com.vma.smartfishingapp.api.ApiConfig;
+import com.vma.smartfishingapp.database.table.FlagDB;
 import com.vma.smartfishingapp.dom.VmaConstants;
 import com.vma.smartfishingapp.ui.component.ConfirmDialog;
 import com.vma.smartfishingapp.ui.master.MyActivity;
@@ -22,6 +27,7 @@ public class ProfileActivity extends MyActivity {
     TextView txvw_name,txvw_status;
     ImageView imvw_status;
     CircleImageView imvw_profile;
+    RelativeLayout rvly_picture;
 
     @Override
     protected int setLayout() {
@@ -41,6 +47,7 @@ public class ProfileActivity extends MyActivity {
         item_username = findViewById(R.id.item_username);
         txvw_status = findViewById(R.id.txvw_status);
         imvw_status = findViewById(R.id.imvw_status);
+        rvly_picture = findViewById(R.id.rvly_picture);
     }
 
     @Override
@@ -58,7 +65,7 @@ public class ProfileActivity extends MyActivity {
         item_sipi.create("GT", mAccountDB.gt);
         txvw_name.setText(mAccountDB.shipName);
         if (!mAccountDB.image.isEmpty()){
-            Glide.with(mActivity).load(ApiConfig.PATH_IMAGE +mAccountDB.image).into(imvw_profile);
+            Glide.with(mActivity).load(ApiConfig.PATH_IMAGE +mAccountDB.image).signature(new ObjectKey(VmaApplication.PROFILE_VERSION)) .into(imvw_profile);
         }
 
         if (mAccountDB.regStatus){
@@ -74,9 +81,29 @@ public class ProfileActivity extends MyActivity {
 
     }
 
+
+    @Override
+    protected void onReloadAccount() {
+        super.onReloadAccount();
+        if (!mAccountDB.image.isEmpty()){
+
+            Glide.with(mActivity).load(ApiConfig.PATH_IMAGE +mAccountDB.image).signature(new ObjectKey(VmaApplication.PROFILE_VERSION))
+                    .into(imvw_profile);
+        }
+
+        if (mAccountDB.regStatus){
+            imvw_status.setImageResource(R.drawable.ic_verified);
+            txvw_status.setText(getResources().getString(R.string.premium));
+            txvw_status.setTextColor(ContextCompat.getColor(mActivity,R.color.gold));
+        }
+    }
+
+
     @Override
     protected void initListener() {
         findViewById(R.id.mrly_logout).setOnClickListener(view -> logout());
+
+        rvly_picture.setOnClickListener(view -> startActivity(new Intent(mActivity, EditPictureActivity.class)));
     }
 
     private void logout(){

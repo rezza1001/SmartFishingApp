@@ -23,7 +23,7 @@
             android:layout_height="wrap_content">
 
             <ImageView
-                android:id="@+id/imvw_icon"
+                android:id="@+id/imvw_back"
                 android:layout_marginTop="50dp"
                 android:layout_centerHorizontal="true"
                 android:src="@drawable/yukom_icon_name"
@@ -35,7 +35,7 @@
                 android:paddingEnd="30dp"
                 android:layout_marginTop="29dp"
                 android:orientation="vertical"
-                android:layout_below="@+id/imvw_icon"
+                android:layout_below="@+id/imvw_back"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 

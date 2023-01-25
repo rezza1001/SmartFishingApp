@@ -22,6 +22,7 @@ public class VmaApplication extends Application {
     public static float LastBearing = 0;
 
     public static int mPosFormat = VmaConstants.VMA_GPSFORMAT_DEG;
+    public static int PROFILE_VERSION = 1;
 
     @Override
     public void onCreate() {
@@ -38,6 +39,8 @@ public class VmaApplication extends Application {
         new Handler().postDelayed(() -> startService(new Intent(this, LogbookService.class)),5000);
 
         initSettingVMA();
+
+        PROFILE_VERSION = VmaPreferences.getInt(getApplicationContext(),VmaPreferences.IMAGE_PROFILE);
 
         // Check Root
     }

@@ -25,7 +25,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.signature.ObjectKey;
 import com.vma.smartfishingapp.R;
+import com.vma.smartfishingapp.VmaApplication;
 import com.vma.smartfishingapp.api.ApiConfig;
 import com.vma.smartfishingapp.database.table.DirectionDB;
 import com.vma.smartfishingapp.dom.MenuHolder;
@@ -116,11 +119,10 @@ public class MainActivity extends MyActivity {
         txvw_ship.setText(mAccountDB.shipName);
         txvw_owner.setText(mAccountDB.imei);
         if (!mAccountDB.image.isEmpty()){
-            Glide.with(mActivity).load(ApiConfig.PATH_IMAGE + mAccountDB.image).into(imvw_kapal);
+            Glide.with(mActivity).load(ApiConfig.PATH_IMAGE +mAccountDB.image).signature(new ObjectKey(VmaApplication.PROFILE_VERSION)) .into(imvw_kapal);
         }
 
         startService(new Intent(mActivity, AuthService.class));
-
 
     }
 
@@ -246,6 +248,13 @@ public class MainActivity extends MyActivity {
     protected void onResume() {
         super.onResume();
         canPause = true;
+    }
+
+    @Override
+    protected void onReloadAccount() {
+        if (!mAccountDB.image.isEmpty()){
+            Glide.with(mActivity).load(ApiConfig.PATH_IMAGE +mAccountDB.image).signature(new ObjectKey(VmaApplication.PROFILE_VERSION)) .into(imvw_kapal);
+        }
     }
 
     private void minimizeMode(){

@@ -44,7 +44,7 @@ public class WeatherTodayView extends MyView {
         txvw_wind = findViewById(R.id.txvw_wind);
         txvw_wavehight = findViewById(R.id.txvw_wavehight);
         txvw_wave = findViewById(R.id.txvw_wave);
-        imvw_icon = findViewById(R.id.imvw_icon);
+        imvw_icon = findViewById(R.id.imvw_back);
 
         try {
             setData(null);

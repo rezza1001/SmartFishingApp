@@ -32,6 +32,7 @@ public class VmaConstants {
     public static String NOTIFY_DIRECTION = "com.uct.vma.notify.direction";
     public static String NOTIFY_SHOW_TRACK = "com.uct.vma.notify.showtrack";
     public static String NOTIFY_RELOAD = "com.uct.vma.notify.reload";
+    public static String NOTIFY_ACCOUNT = "com.uct.vma.notify.account";
 
     public static String SCREEN_X = "screen_x";
     public static String SCREEN_Y = "screen_y";

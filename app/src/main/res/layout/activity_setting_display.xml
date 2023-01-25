@@ -13,7 +13,7 @@
         android:layout_height="56dp">
 
         <ImageView
-            android:id="@+id/imvw_icon"
+            android:id="@+id/imvw_back"
             android:layout_marginStart="20dp"
             android:layout_centerVertical="true"
             android:src="@drawable/ic_setting_theme"
@@ -24,7 +24,7 @@
             android:orientation="horizontal"
             android:layout_marginStart="5dp"
             android:gravity="center_vertical"
-            android:layout_toEndOf="@+id/imvw_icon"
+            android:layout_toEndOf="@+id/imvw_back"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <TextView

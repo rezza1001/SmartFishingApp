@@ -17,7 +17,7 @@ public class VmaPreferences {
 
     public static final String BRIGHTNESS = "BRIGHTNESS";
     public static final String BRIGHTNESS_MODE = "BRIGHTNESS_MODE";
-
+    public static final String IMAGE_PROFILE = "IMAGE_PROFILE";
 
 
 

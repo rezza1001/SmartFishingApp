@@ -59,7 +59,7 @@ public class TrackInfoDialog extends MyDialog {
         bbtn_cancel.setOnActionListener(view1 -> closeDialog());
 
 
-        imvw_icon = findViewById(R.id.imvw_icon);
+        imvw_icon = findViewById(R.id.imvw_back);
         txvw_title = findViewById(R.id.txvw_title);
         txvw_name = findViewById(R.id.txvw_name);
         txvw_point = findViewById(R.id.txvw_point);

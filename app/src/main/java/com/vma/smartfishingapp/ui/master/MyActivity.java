@@ -1,19 +1,19 @@
 package com.vma.smartfishingapp.ui.master;
 
-import android.Manifest;
 import android.app.Activity;
-import android.content.pm.PackageManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.vma.smartfishingapp.VmaApplication;
 import com.vma.smartfishingapp.database.table.AccountDB;
-import com.vma.smartfishingapp.libs.Utility;
-
-import java.util.ArrayList;
+import com.vma.smartfishingapp.dom.VmaConstants;
 
 public abstract class MyActivity extends AppCompatActivity {
 
@@ -34,6 +34,7 @@ public abstract class MyActivity extends AppCompatActivity {
         mAccountDB.loadData(mActivity);
 
         TAG = mActivity.getClass().getSimpleName();
+        registerReceiver(receiver, new IntentFilter(VmaConstants.NOTIFY_ACCOUNT));
 
         initLayout();
         initData();
@@ -43,11 +44,26 @@ public abstract class MyActivity extends AppCompatActivity {
     protected void reloadAccount(){
         mAccountDB = new AccountDB();
         mAccountDB.loadData(mActivity);
+
+        onReloadAccount();
+    }
+
+    protected void onReloadAccount(){
+
     }
 
     protected abstract int setLayout();
     protected abstract void initLayout();
     protected abstract void initData();
     protected abstract void initListener();
+
+    BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(VmaConstants.NOTIFY_ACCOUNT)){
+                reloadAccount();
+            }
+        }
+    };
 
 }

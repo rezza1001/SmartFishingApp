@@ -11,6 +11,7 @@ public class ApiConfig {
     public static final String KOPERASI = "mobile/institution";
     public static final String PELABUHAN = "mobile/port";
     public static final String UPLOAD_FILE = "file/upload";
+    public static final String DELETE_FILE = "file/delete";
     public static final String POST_WEATHER = "mobile/weather";
     public static final String POST_DPI = "mobile/dpi";
     public static final String POST_SAVE_POSITION = "mobile/position";
